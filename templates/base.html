@@ -1,0 +1,44 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %} SheetSwap {% endblock %}
+
+{% block navbar %}
+
+    <div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <button type="button" class="navbar-toggle"
+                    data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">SheetSwap</a>
+
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="dashboard">Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %} {# end nav #}
+
+{% block content %}
+    {{ super() }}
+
+    {% block footer %}
+        <footer class="footer">
+
+        <a href="http://flask.pocoo.org/"><img
+           src="http://flask.pocoo.org/static/badges/made-with-flask-s.png"
+           border="0"
+           alt="made with Flask"
+           title="made with Flask">
+        </a>
+        </footer>
+    {% endblock footer %} {# end footer #}
+{% endblock content %}

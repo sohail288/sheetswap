@@ -1,0 +1,17 @@
+{
+  "name": "smtrade",
+  "version": "0.0.0",
+  "authors": [
+    "sohail288"
+  ],
+  "description": "Trade Sheet Music",
+  "license": "MIT",
+  "homepage": "sheetcorral.com",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
