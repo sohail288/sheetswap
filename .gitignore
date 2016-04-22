@@ -92,3 +92,6 @@ ENV/
 
 # bower
 static/bower_components
+
+# db
+*.sqlite
