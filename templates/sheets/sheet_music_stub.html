@@ -1,0 +1,13 @@
+{#  templates/sheets/sheet_music_stub.html #}
+<li class="sheet-music-stub col-xs-12 col-sm-6 col-md-4 col-lg-3">
+    <div class="panel panel primary">
+        <div class="panel-heading">
+            {{ sheet_music.title }}
+        </div>
+    </div>
+
+    <div class="panel-body">
+        <img src="{{ url_for('static',
+                filename='assets/images/sheet_image_stub.jpg') }} ">
+    </div>
+</li>

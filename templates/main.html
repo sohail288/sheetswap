@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block page_content %}
     <div class="container jumbotron text-center">
         <h1>Trade your sheet music!</h1>
         <form>
             <input class='form-control input-lg' type="text" placeholder="Vivaldi 4 Seasons">
         </form>
     </div>
-    {% block footer %}
-        {{ super() }}
-    {% endblock footer %}
-{% endblock content %}
+
+{% endblock page_content %}
 

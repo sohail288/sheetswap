@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static',
+            filename='assets/css/sheets/styles.css') }}"
+            rel="stylesheet">
+
+{%  endblock head %}
+
+{% block title %}
+    {{ name }}
+{% endblock %}
+
+{% block page_content %}
+    <div class="container">
+        <h1 class="jumbotron text-center">All The Sheets</h1>
+    </div>
+
+    <ul class="list-unstyled sheets">
+        {% for sheet_music in sheets %}
+            {% include 'sheets/sheet_music_stub.html' %}
+        {% endfor %}
+    </ul>
+{% endblock page_content %}

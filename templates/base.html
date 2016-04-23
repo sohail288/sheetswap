@@ -32,18 +32,20 @@
 {% endblock %} {# end nav #}
 
 {% block content %}
-    {{ super() }}
+    {% block page_content %}
+
+    {% endblock page_content %}
 
     {% block footer %}
         <footer id="footer" class="footer">
             <div class="container">
                 <a href="http://flask.pocoo.org/"><img
-                   src="http://flask.pocoo.org/static/badges/made-with-flask-s.png"
-                   border="0"
-                   alt="made with Flask"
-                   title="made with Flask">
+                        src="http://flask.pocoo.org/static/badges/made-with-flask-s.png"
+                        border="0"
+                        alt="made with Flask"
+                        title="made with Flask">
                 </a>
-             </div>
+            </div>
         </footer>
     {% endblock footer %} {# end footer #}
 {% endblock content %}

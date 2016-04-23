@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block page_content %}
+    {% if sheet_music %}
+        <h1>{{ sheet_music.title }}</h1>
+        <h1>{{ sheet_music.composer }}</h1>
+    {% else %}
+        <h1> This one doesn't exist</h1>
+    {% endif %}
+{% endblock page_content %}

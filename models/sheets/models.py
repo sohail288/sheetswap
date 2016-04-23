@@ -31,9 +31,11 @@ class Sheetmusic(Base):
     time_signature = Column(Unicode(64))
 
     genre_tags =  relationship('Genre',
-                               secondary=SheetmusicGenres)
+                               secondary=SheetmusicGenres,
+                               back_populates='sheetmusic')
     instrumentation = relationship('Instrument',
-                                   secondary=SheetmusicInstruments)
+                                   secondary=SheetmusicInstruments,
+                                   back_populates='sheetmusic')
 
     def __repr__(self):
         return '<Sheetmusic id={} title={} composer={}>'.format(
@@ -42,10 +44,27 @@ class Sheetmusic(Base):
             self.composer
         )
 
+    def parse_tags(self, tag_string, TagObj, rel):
+        tag_set = set(tag.strip() for tag in tag_string.split(','))
+        tags = [TagObj.query.filter(TagObj.name == tag).first()
+                or TagObj(tag)
+                for tag in tag_set]
+
+        for tag in tags:
+            if tag not in getattr(self, rel):
+                getattr(self, rel).append(tag)
+
 class Genre(Base):
     """ Defines a Genre model. One Sheetmusic can have multiple Genre"""
     __tablename__ = 'genre'
     name = Column(Unicode(128))
+
+    sheetmusic = relationship('Sheetmusic',
+                              secondary=SheetmusicGenres,
+                              back_populates='genre_tags')
+
+    def __init__(self, name):
+        self.name = name
 
     def __repr__(self):
         return "<Genre id={} name={}>".format(self.id, self.name)
@@ -54,7 +73,13 @@ class Genre(Base):
 class Instrument(Base):
     """ Defines an Instrument model. One Sheetmusic can have multiple Instruments"""
     __tablename__ = 'instrument'
-    name = Column(Unicode(128))
+    name = Column(Unicode(128), unique=True)
+
+    sheetmusic = relationship('Sheetmusic',
+                              secondary=SheetmusicInstruments,
+                              back_populates='instrumentation')
+    def __init__(self, name):
+        self.name = name
 
     def __repr__(self):
         return "<Instrument id={} name={}>".format(self.id, self.name)
