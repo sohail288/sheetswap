@@ -32,10 +32,10 @@
 {% endblock %} {# end nav #}
 
 {% block content %}
-    {% block page_content %}
-
-    {% endblock page_content %}
-
+    <div class="container">
+        {% block page_content %}
+        {% endblock page_content %}
+    </div>
     {% block footer %}
         <footer id="footer" class="footer">
             <div class="container">
