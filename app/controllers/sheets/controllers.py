@@ -2,12 +2,10 @@
 The controllers for sheets
 """
 
-from flask import (Blueprint,
-                   g,
+from flask import (g,
                    flash,
                    request,
                    render_template,
-                   abort,
                     url_for,
                    redirect)
 
@@ -18,7 +16,15 @@ from models.sheets import (Sheetmusic, Genre, Instrument)
 from models.sheets.forms import SheetMusicForm
 
 
+def populate_sheet_music(form, sheet_music):
+    for field in ['title', 'composer', 'time_signature', 'cover', 'arranged_by']:
+        setattr(sheet_music, field, form[field].data if form[field].data else None)
 
+    # add the genres
+    sheet_music.parse_tags(form.genre.data, Genre, 'genre_tags')
+
+    # add the instruments
+    sheet_music.parse_tags(form.instrumentation.data, Instrument, 'instrumentation')
 
 
 @sheets_routes.route('/')
@@ -34,16 +40,7 @@ def create():
 
     if request.method == 'POST' and form.validate():
         sheet_music = Sheetmusic()
-
-        for field in ['title', 'composer', 'time_signature', 'cover', 'arranged_by']:
-            setattr(sheet_music, field, form[field].data if form[field].data else None)
-
-        # add the genres
-        sheet_music.parse_tags(form.genre.data, Genre, 'genre_tags')
-
-        # add the instruments
-        sheet_music.parse_tags(form.instrumentation.data, Instrument, 'instrumentation')
-
+        populate_sheet_music(form, sheet_music)
         g.db.add(sheet_music)
         g.db.commit()
 

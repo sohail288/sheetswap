@@ -12,12 +12,12 @@ from app.models import Base
 
 SheetmusicGenres = Table('sheetmusic_genres', Base.metadata,
                          Column('sheetmusic_id', Integer, ForeignKey('sheetmusic.id')),
-                         Column('genre_id', Integer, ForeignKey('genre.id'))
+                         Column('genre_id', Integer, ForeignKey('genres.id'))
 )
 
 SheetmusicInstruments = Table('sheetmusic_instruments', Base.metadata,
                               Column('sheetmusic_id', Integer, ForeignKey('sheetmusic.id')),
-                              Column('instrument_id', Integer, ForeignKey('instrument.id'))
+                              Column('instrument_id', Integer, ForeignKey('instruments.id'))
 )
 
 class Sheetmusic(Base):
@@ -27,6 +27,7 @@ class Sheetmusic(Base):
     cover = Column(Unicode(255), unique=True)
     composer = Column(Unicode(255))
     arranged_by = Column(Unicode(255))
+    #key = Column(Unicode(8))
 
     time_signature = Column(Unicode(64))
 
@@ -37,6 +38,26 @@ class Sheetmusic(Base):
                                    secondary=SheetmusicInstruments,
                                    back_populates='sheetmusic')
 
+    def __init__(self,  *args, **kwargs):
+        """ Take the instrumentation and genre_tags kwarg and use parse on them
+            Handles the rest of the kwargs normally
+        """
+        instrumentation_string = kwargs.pop('instrumentation', None)
+        genre_string           = kwargs.pop('genre_tags', None)
+
+        if instrumentation_string:
+            self.parse_tags(instrumentation_string, Instrument, 'instrumentation')
+
+        if genre_string:
+            self.parse_tags(genre_string, Genre, 'genre_tags')
+
+        for key, val in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, val)
+
+
+
+
     def __repr__(self):
         return '<Sheetmusic id={} title={} composer={}>'.format(
             self.id,
@@ -45,7 +66,7 @@ class Sheetmusic(Base):
         )
 
     def parse_tags(self, tag_string, TagObj, rel):
-        tag_set = set(tag.strip() for tag in tag_string.split(','))
+        tag_set = set(tag.strip().lower() for tag in tag_string.split(','))
         tags = [TagObj.query.filter(TagObj.name == tag).first()
                 or TagObj(tag)
                 for tag in tag_set]
@@ -56,7 +77,7 @@ class Sheetmusic(Base):
 
 class Genre(Base):
     """ Defines a Genre model. One Sheetmusic can have multiple Genre"""
-    __tablename__ = 'genre'
+    __tablename__ = 'genres'
     name = Column(Unicode(128))
 
     sheetmusic = relationship('Sheetmusic',
@@ -72,7 +93,7 @@ class Genre(Base):
 
 class Instrument(Base):
     """ Defines an Instrument model. One Sheetmusic can have multiple Instruments"""
-    __tablename__ = 'instrument'
+    __tablename__ = 'instruments'
     name = Column(Unicode(128), unique=True)
 
     sheetmusic = relationship('Sheetmusic',
@@ -83,5 +104,12 @@ class Instrument(Base):
 
     def __repr__(self):
         return "<Instrument id={} name={}>".format(self.id, self.name)
+
+    def __eq__(self, other):
+        """
+        :param other: The other instrument object
+        :return: boolean True if both objects are equal
+        """
+        return bool(self.name == other.name)
 
 

@@ -24,7 +24,13 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="/">Home</a></li>
-                    <li><a href="dashboard">Dashboard</a></li>
+                    {% if current_user %}
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="{{  url_for('auth.logout') }}">Logout</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('sheets.main') }}">Sheets</a></li>
                 </ul>
             </div>
         </div>

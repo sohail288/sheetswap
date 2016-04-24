@@ -9,7 +9,12 @@
     </div>
 
     <div class="panel-body">
-        <img src="{{ url_for('static',
-                filename='assets/images/sheet_image_stub.jpg') }} ">
+
+        <img src= {% if not sheet_music.cover %}
+                     "{{ url_for('static',
+                filename='assets/images/sheet_image_stub.jpg') }}
+                 {% else %}
+                    {{ sheet_music.cover }}
+                 {% endif %}">
     </div>
 </li>

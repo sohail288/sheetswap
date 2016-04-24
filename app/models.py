@@ -7,7 +7,6 @@ from sqlalchemy import Column, Integer
 
 class Base(object):
 
-
     @declared_attr
     def __tablename__(cls):
         """don't have to specify table name in inherited classes"""

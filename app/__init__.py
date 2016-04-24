@@ -31,6 +31,8 @@ def create_app():
     from .controllers.sheets import sheets_routes
     app.register_blueprint(sheets_routes)
 
+    from .controllers.auth import auth_routes
+    app.register_blueprint(auth_routes)
 
     bootstrap.init_app(app)
 

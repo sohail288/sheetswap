@@ -15,7 +15,7 @@ class SheetMusicForm(Form):
     arranged_by = StringField(u'Arranged by')
     genre = StringField(u'Genre', [validators.Length(min=1)])
     time_signature = StringField(u'Time Signature', [validators.Regexp(regex=TS_REGEXP)])
-    cover = FileField(u'Cover Picture',  [validators.Optional(), validators.regexp(u'^[^\\/]+\.jpg$')])
+    cover = FileField(u'Cover Picture',  [validators.Optional(), validators.regexp(u'^[^\\/]+\.(jpg|png)$')])
 
 
 

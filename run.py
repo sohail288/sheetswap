@@ -3,11 +3,12 @@
 """
 
 from flask.ext.script import Manager
-from flask import g
+from flask import g, session
 from app import create_app
 
 from app.db import db_session, init_db
 
+from models.auth import User
 
 smtrade = create_app()
 manager = Manager(smtrade)
@@ -19,6 +20,21 @@ def shutdown_session(exception=None):
 @smtrade.before_request
 def before_request():
     g.db = db_session()
+
+    if session.get('current_user_id', None):
+        g.user = g.db.query(User).filter_by(id=int(session.get('current_user_id')))
+    else:
+        g.user = None
+
+
+@smtrade.context_processor
+def inject_user():
+    if session.get('logged_in', None):
+        context = dict(current_user=g.user)
+    else:
+        context = dict(current_user=None)
+    return context
+
 
 
 if __name__ == "__main__":
