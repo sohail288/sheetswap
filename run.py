@@ -36,6 +36,5 @@ def inject_user():
     return context
 
 
-
 if __name__ == "__main__":
     manager.run()

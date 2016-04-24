@@ -34,6 +34,9 @@ def create_app():
     from .controllers.auth import auth_routes
     app.register_blueprint(auth_routes)
 
+    from .controllers.items import items_routes
+    app.register_blueprint(items_routes)
+
     bootstrap.init_app(app)
 
     app.secret_key = 'bananas'

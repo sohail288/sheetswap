@@ -9,7 +9,6 @@ from flask import (g,
                     url_for,
                    redirect)
 
-from app import TEMPLATE_DIR
 from . import sheets_routes
 
 from models.sheets import (Sheetmusic, Genre, Instrument)

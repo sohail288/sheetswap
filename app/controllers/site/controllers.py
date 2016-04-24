@@ -29,6 +29,6 @@ def search_results():
     if q:
         results = g.db.query(Sheetmusic).filter(Sheetmusic.title.like('%{}%'.format(q))).all()
         return render_template('search_results.html', results=results, q = q)
-    flash('Need to search for something')
+    flash('Need to search for something', 'error')
     return redirect(url_for('.index'))
 

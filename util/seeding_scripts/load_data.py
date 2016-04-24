@@ -9,10 +9,11 @@ import json
 from app.db import db_session, init_db
 from app import BASE_DIR
 from models.sheets import Sheetmusic, Genre, Instrument
+from models.auth   import User, Address
 from os import path
 
 
-DATA_DIRECTORY = path.join(BASE_DIR, 'lib/seed_data')
+DATA_DIRECTORY = path.join(BASE_DIR, 'util/seed_data')
 
 def load_sheet_music():
     with open(path.join(DATA_DIRECTORY, 'sheet_music.json'), 'r') as fh:
@@ -28,12 +29,26 @@ def load_sheet_music():
                 new_obj.parse_tags(genres, Genre, 'genre_tags')
 
                 db_session.add(new_obj)
-                print(new_obj)
+                print("added", new_obj)
                 db_session.commit()
 
-    print(db_session.new)
-    if db_session.new or db_session.dirty:
-        db_session.commit()
+
+def load_users():
+    with open(path.join(DATA_DIRECTORY, 'auth.json')) as fh:
+        data = json.load(fh)
+
+        for user in data['users']:
+            if db_session.query(User).filter_by(email=user['email']).one_or_none() is None:
+                addresses = user.pop('addresses')
+
+                new_user_obj = User(**user)
+
+                new_address_objs = [Address(**address) for address in addresses]
+                new_user_obj.addresses = new_address_objs
+
+                db_session.add(new_user_obj)
+                print("added", new_user_obj, new_address_objs)
+                db_session.commit()
 
 
 def load_data(*args, **kwargs):
@@ -41,6 +56,7 @@ def load_data(*args, **kwargs):
     session = db_session()
 
     load_sheet_music()
+    load_users()
 
     db_session.remove()
 

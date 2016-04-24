@@ -10,6 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
+
 from . import BASE_DIR
 
 
@@ -27,11 +28,16 @@ db_session  = scoped_session(sessionmaker(autocommit=False,
 from .models import Base
 Base.query = db_session.query_property()
 
-def init_db():
+def init_db(seed_data=False):
     # import model modules
     from models.sheets import models
     from models.auth import models
+    from models.items import models
     Base.metadata.create_all(bind=engine)
+
+    if seed_data:
+        from util.seeding_scripts.load_data import load_data
+        load_data()
 
 
 

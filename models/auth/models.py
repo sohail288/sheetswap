@@ -2,11 +2,14 @@ from datetime import datetime
 
 from sqlalchemy import Column, Integer, Unicode, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import validates, relationship
-from werkzeug.security import generate_password_hash, check_password_hash
+
+from passlib.apps import custom_app_context as sheetswap_pwd_context
 
 from app.db import Base
 
-
+"""
+TODO: IMPLEMENT AN UPGRADABLE HASHING ROUTINE: https://pythonhosted.org/passlib/lib/passlib.context-tutorial.html
+"""
 
 class User(Base):
     __tablename__ = 'users'
@@ -33,10 +36,10 @@ class User(Base):
 
     @password.setter
     def password(self, password):
-        self.password_hash = generate_password_hash(password, salt_length=16)
+        self.password_hash = sheetswap_pwd_context.encrypt(password)
 
     def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return sheetswap_pwd_context.verify(password, self.password_hash)
 
     def __repr__(self):
         return "<User email={} admin={}>".format(self.email, self.admin)
@@ -53,4 +56,9 @@ class Address(Base):
     state = Column(Unicode(200))
     postal_code = Column(Unicode(200))
     country = Column(Unicode(200))
+
+    def __repr__(self):
+        return "<Address user={} street_address={} city={}>".format(self.user,
+                                                                    self.street_address,
+                                                                    self.city)
 

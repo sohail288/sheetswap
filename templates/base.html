@@ -1,5 +1,5 @@
 {% extends "bootstrap/base.html" %}
-{% import "bootstrap/utils.html" as util %}
+{% import "util.html" as util %}
 
 {% block title %} SheetSwap {% endblock %}
 
@@ -40,7 +40,7 @@
 
 {% block content %}
 
-    {{  util.flashed_messages() }}
+    {{  util.flashed_messages(dismissible=True) }}
 
     <div class="container">
         {% block page_content %}
@@ -49,12 +49,22 @@
     {% block footer %}
         <footer id="footer" class="footer">
             <div class="container">
-                <a href="http://flask.pocoo.org/"><img
-                        src="http://flask.pocoo.org/static/badges/made-with-flask-s.png"
-                        border="0"
-                        alt="made with Flask"
-                        title="made with Flask">
-                </a>
+                <ul class="list-inline">
+                    <li><a href="http://flask.pocoo.org/"><img
+                            src="http://flask.pocoo.org/static/badges/made-with-flask-s.png"
+                            border="0"
+                            alt="made with Flask"
+                            title="made with Flask">
+                    </a></li>
+                    <li><a href="http://www.sqlalchemy.org">
+                        <img src="http://www.sqlalchemy.org/img/sqla_logo.png"
+                             border="0"
+                             height="25"
+                             alt="Uses SQLAlchemy"
+                             title="Uses SQLALchemy">
+                    </a></li>
+
+                </ul>
             </div>
         </footer>
     {% endblock footer %} {# end footer #}
