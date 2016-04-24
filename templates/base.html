@@ -1,4 +1,5 @@
 {% extends "bootstrap/base.html" %}
+{% import "bootstrap/utils.html" as util %}
 
 {% block title %} SheetSwap {% endblock %}
 
@@ -38,6 +39,9 @@
 {% endblock %} {# end nav #}
 
 {% block content %}
+
+    {{  util.flashed_messages() }}
+
     <div class="container">
         {% block page_content %}
         {% endblock page_content %}
