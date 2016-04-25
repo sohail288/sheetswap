@@ -22,11 +22,13 @@ class User(Base):
     updated_on = Column(DateTime(), default = datetime.now, onupdate=datetime.now)
 
     addresses = relationship('Address', back_populates='user')
+    items = relationship('Item', back_populates='user')
+
 
 
     @validates('email')
     def validate_email(self, key, address):
-        assert '@' in address and len(address) > 2
+        assert '@' in address and len(address.split('@')) == 2
         return address
 
 

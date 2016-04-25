@@ -95,3 +95,6 @@ static/bower_components
 
 # db
 *.sqlite
+
+# notes
+notes.txt

@@ -8,6 +8,7 @@ from sqlalchemy import Table, Column, Integer, Unicode, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 from app.models import Base
+from models.items import Item
 
 
 SheetmusicGenres = Table('sheetmusic_genres', Base.metadata,
@@ -37,6 +38,8 @@ class Sheetmusic(Base):
     instrumentation = relationship('Instrument',
                                    secondary=SheetmusicInstruments,
                                    back_populates='sheetmusic')
+
+    items = relationship('Item', back_populates='sheetmusic')
 
     def __init__(self,  *args, **kwargs):
         """ Take the instrumentation and genre_tags kwarg and use parse on them
