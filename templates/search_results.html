@@ -9,11 +9,13 @@
     </div>
 
   {% if results %}
-      <h1> Found {{ results | count }}  result{% if results |count > 1 %}s{% endif %}</h1>
-    {% for result in results %}
-      <h2>{{ result.title }} | {{ result.composer }}</h2>
-    {% endfor %}
+      <h1> Found {{ results | count }}  result{% if results | count > 1  %}s{% endif %}</h1>
+     <ul class="list-unstyled sheets">
+        {% for sheet_music in results %}
+            {% include 'sheets/sheet_music_stub.html' %}
+        {% endfor %}
+      </ul>
   {% else %}
-    <h2>No result found</h2>
+    <h2>No result found, if you have this, you can trade it!</h2>
   {% endif %}
 {% endblock %}

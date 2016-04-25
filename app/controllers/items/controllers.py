@@ -10,11 +10,13 @@ from flask import (g,
                    render_template)
 
 from . import items_routes
+from models.items import Item
 
 
 @items_routes.route('/')
 def main():
-    return render_template('items/index.html')
+    items = g.db.query(Item).filter(Item.available == True)
+    return render_template('items/index.html', items=items)
 
 @items_routes.route('/create', methods=['POST', 'GET'])
 def create():

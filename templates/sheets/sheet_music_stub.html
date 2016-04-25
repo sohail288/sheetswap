@@ -1,20 +1,26 @@
 {#  templates/sheets/sheet_music_stub.html #}
 <li class="sheet-music-stub col-xs-12 col-sm-6 col-md-4 col-lg-3">
-    <div class="panel panel primary">
+    <div class="panel panel-default">
         <div class="panel-heading text-center">
             <a href="{{ url_for('sheets.index', sheet_music_id = sheet_music.id) }}">
                 {{ sheet_music.title }}
             </a>
         </div>
-    </div>
 
-    <div class="panel-body">
+        <div class="panel-body">
 
-        <img src= {% if not sheet_music.cover %}
+        <img class="img-rounded center-block" src= {% if not sheet_music.cover %}
                      "{{ url_for('static',
                 filename='assets/images/sheet_image_stub.jpg') }}
                  {% else %}
                     {{ sheet_music.cover }}
                  {% endif %}">
+        </div>
+
+        {% set num_items = sheet_music.items | count %}
+        <div class=" text-center">
+            {{ num_items }} copies available !
+        </div>
+
     </div>
 </li>

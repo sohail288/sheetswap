@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
 
 {% block page_content %}
-    {% if sheet_music %}
-        <h1>{{ sheet_music.title }}</h1>
-        <h1>{{ sheet_music.composer }}</h1>
-    {% else %}
-        <h1> This one doesn't exist</h1>
-    {% endif %}
+    {% with items = sheet_music.items %}
+            <h1 class="jumbotron">Copies available for {{ sheet_music.title }}</h1>
+            {% include 'items/item_list.html' %}
+    {% endwith %}
 {% endblock page_content %}

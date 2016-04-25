@@ -6,15 +6,12 @@ import os
 
 from flask import request
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 
 from . import BASE_DIR
-
-
-
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'data.sqlite')
 #app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
@@ -42,6 +39,11 @@ def init_db(seed_data=False, rebuild=False):
         from util.seeding_scripts.load_data import load_data
         load_data()
 
+def get_db_metadata(engine=engine):
+    metadata = MetaData()
+    metadata.bind = engine
+    metadata.reflect()
+    return metadata
 
 
 

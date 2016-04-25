@@ -5,12 +5,16 @@
     The routine named load_data will be the main routine
 """
 import json
+import random
+from os import path
+import uuid
 
 from app.db import db_session, init_db
 from app import BASE_DIR
 from models.sheets import Sheetmusic, Genre, Instrument
 from models.auth   import User, Address
-from os import path
+from models.items import Item, ItemImage
+
 
 
 DATA_DIRECTORY = path.join(BASE_DIR, 'util/seed_data')
@@ -50,6 +54,34 @@ def load_users():
                 print("added", new_user_obj, new_address_objs)
                 db_session.commit()
 
+def load_items(n=50):
+    """Load items into DB. The images """
+    conditions = ['clean', 'okay', 'torn', 'incomplete']
+    description = ["A test description\nThis sheet is cool"]
+
+    sheets = db_session.query(Sheetmusic).all()
+    users = db_session.query(User).all()
+
+    random.seed(0)
+    for i in range(n):
+        sm = random.choice(sheets)
+        user = random.choice(users)
+        item = Item()
+        item.user = user
+        item.sheetmusic = sm
+        item.condition = random.choice(conditions)
+        item.description = random.choice(description)
+
+        # add 4 images to each item
+        item.images = [ItemImage("{}_{}".format(user.username, uuid.uuid4())) for i in range(4)]
+
+        db_session.add(item)
+        print(item)
+        db_session.commit()
+
+
+
+
 
 def load_data(*args, **kwargs):
 
@@ -57,6 +89,7 @@ def load_data(*args, **kwargs):
 
     load_sheet_music()
     load_users()
+    load_items()
 
     db_session.remove()
 

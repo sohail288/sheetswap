@@ -51,7 +51,10 @@ class ItemImage(Base):
     item_id =  Column(Integer, ForeignKey('items.id'))
     item = relationship('Item', back_populates='images')
     timestamp = Column(DateTime(), default=datetime.now)
-    image = Column(Unicode(256), nullable=False)
+    image = Column(Unicode(256), nullable=False, unique=True)
+
+    def __init__(self, image):
+        self.image = image
 
     def __repr__(self):
         return "<ItemImage item_id={} timestamp={}>".format(self.item_id, self.timestamp)
