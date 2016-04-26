@@ -10,14 +10,14 @@ from os import path
 import uuid
 
 from app.db import db_session, init_db
-from app import BASE_DIR
+from config import get_env_config
 from models.sheets import Sheetmusic, Genre, Instrument
 from models.auth   import User, Address
 from models.items import Item, ItemImage
 
 
-
-DATA_DIRECTORY = path.join(BASE_DIR, 'util/seed_data')
+config_obj = get_env_config()
+DATA_DIRECTORY = path.join(config_obj.BASE_DIR, 'util/seed_data')
 
 def load_sheet_music():
     with open(path.join(DATA_DIRECTORY, 'sheet_music.json'), 'r') as fh:

@@ -98,3 +98,6 @@ static/bower_components
 
 # notes
 notes.txt
+
+# env
+.env_local

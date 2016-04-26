@@ -1,30 +1,19 @@
-from flask import Flask
-
-from flask import (
-    render_template,
-    request,
-    g,
-    session,
-    jsonify,
-    Response
-)
-
-from flask.ext.bootstrap import Bootstrap
-
 import os
 
-
-BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
-STATIC_DIR   = os.path.join(BASE_DIR, 'static')
-
+from flask import Flask
+from flask.ext.bootstrap import Bootstrap
+from config import get_env_config
 
 bootstrap = Bootstrap()
 
-def create_app():
-    # import blueprints and register them
-    app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+def create_app(app_settings = None):
+    config_obj = get_env_config(app_settings)
+    app = Flask(__name__,
+                template_folder=config_obj.TEMPLATE_DIR,
+                static_folder=config_obj.STATIC_DIR)
+    app.config.from_object(config_obj)
 
+    # import blueprints and register them
     from .controllers.site import main_routes
     app.register_blueprint(main_routes)
 
@@ -39,6 +28,5 @@ def create_app():
 
     bootstrap.init_app(app)
 
-    app.secret_key = 'bananas'
     return app
 

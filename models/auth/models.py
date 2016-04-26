@@ -28,7 +28,7 @@ class User(Base):
 
     @validates('email')
     def validate_email(self, key, address):
-        assert '@' in address and len(address.split('@')) == 2
+        assert '@' in address and address.split('@')[1] != ''
         return address
 
 

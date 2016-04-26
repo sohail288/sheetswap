@@ -4,19 +4,15 @@ Sets up the DB and stuff
 
 import os
 
-from flask import request
-
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+
+from config import get_env_config
 
 
-from . import BASE_DIR
+app_settings = get_env_config()
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'data.sqlite')
-#app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-
-db_uri = 'sqlite:///' + os.path.join(BASE_DIR, 'data.sqlite')
+db_uri = app_settings.SQLALCHEMY_DATABASE_URI
 engine = create_engine(db_uri, convert_unicode=True)
 db_session  = scoped_session(sessionmaker(autocommit=False,
                                           autoflush=False,
@@ -44,6 +40,7 @@ def get_db_metadata(engine=engine):
     metadata.bind = engine
     metadata.reflect()
     return metadata
+
 
 
 
