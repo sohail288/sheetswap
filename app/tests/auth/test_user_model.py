@@ -1,4 +1,5 @@
 import unittest
+from app.tests.test_base import AppTest
 from models import User, Address
 
 
@@ -68,3 +69,5 @@ class AddressModelTestcase(unittest.TestCase):
         u.addresses.append(a)
 
         self.assertEqual(len(u.addresses), 1)
+
+
