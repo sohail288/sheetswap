@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship, validates
 
 
 from app.db import Base
-from models.auth import User
 
 
 class Trade(Base):

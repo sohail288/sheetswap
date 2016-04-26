@@ -15,6 +15,7 @@ from flask import (Blueprint,
 from . import main_routes
 from app.db import db_session
 from models.sheets import Sheetmusic
+from models import Trade, Item
 
 
 
@@ -35,8 +36,9 @@ def search_results():
 
 @main_routes.route('/dashboard')
 def dashboard():
+    trades_for_user = g.db.query(Trade).filter(Trade.user_to_id == g.user.id).all()
     if not session.get('logged_in', False):
-        flash("You must login for that cuddy", "error")
+        flash("You must login for that", "error")
         return redirect(url_for('auth.login'))
 
-    return render_template('dashboard/index.html')
+    return render_template('dashboard/index.html', trades=trades_for_user)

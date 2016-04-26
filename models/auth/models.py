@@ -24,8 +24,6 @@ class User(Base):
     addresses = relationship('Address', back_populates='user')
     items = relationship('Item', back_populates='user')
 
-
-
     @validates('email')
     def validate_email(self, key, address):
         assert '@' in address and address.split('@')[1] != ''
@@ -46,6 +44,17 @@ class User(Base):
     def __repr__(self):
         return "<User email={} admin={}>".format(self.email, self.admin)
 
+    def __init__(self, email=None, username=None, password=None, **kwargs):
+        if email:
+            self.email = email
+        if username:
+            self.username = username
+        if password:
+            self.password = password
+
+        for k,v in kwargs.items():
+            if hasattr(self, k):
+                setattr(self, k, v)
 
 class Address(Base):
     __tablename__ = 'addresses'

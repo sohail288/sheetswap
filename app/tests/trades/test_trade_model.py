@@ -8,3 +8,4 @@ class TradeModelTestCase(unittest.TestCase):
         t = Trade()
         self.assertIsNotNone(t)
 
+

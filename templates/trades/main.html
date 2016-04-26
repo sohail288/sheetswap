@@ -2,9 +2,11 @@
 
 {% block page_content %}
 
-    <h1> This is your trade between {{ from_user['sheet_music'] }} and
-         {{ to_user['sheet_music'] }}
+    <h1> This is your trade between {{ trade.item_from.sheetmusic.title }} and
+         {{ trade.item_to.sheetmusic.title }}
     </h1>
+
+    <h1> This trade is happening between {{ trade.user_from_id }} and {{ trade.user_to_id }}</h1>
 
 
 {% endblock page_content %}

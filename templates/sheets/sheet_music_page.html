@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
+{% block sub_title %}
+    sheets | {{ sheet_music.title }}
+{% endblock sub_title %}
 {% block page_content %}
     {% with items = sheet_music.items %}
             <h1 class="jumbotron">Copies available for {{ sheet_music.title }}</h1>

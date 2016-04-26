@@ -22,7 +22,7 @@ def before_request():
     g.db = db_session()
 
     if session.get('current_user_id', None):
-        g.user = g.db.query(User).filter_by(id=int(session.get('current_user_id')))
+        g.user = g.db.query(User).filter_by(id=int(session.get('current_user_id'))).first()
     else:
         g.user = None
 

@@ -1,7 +1,11 @@
 {% extends "bootstrap/base.html" %}
 {% import "util.html" as util %}
 
-{% block title %} SheetSwap {% endblock %}
+{% block title %}
+    SheetSwap
+    {% block path_separator %}{% if request.path != '/' %}|{% endif %}{% endblock path_separator %}
+    {% block sub_title %}{% endblock %}
+{% endblock %}
 
 {% block styles %}
     {{ super() }}
