@@ -9,6 +9,7 @@ from flask import (Blueprint,
                    redirect,
                    flash,
                    url_for,
+                   session,
                    abort)
 
 from . import main_routes
@@ -32,3 +33,10 @@ def search_results():
     flash('Need to search for something', 'error')
     return redirect(url_for('.index'))
 
+@main_routes.route('/dashboard')
+def dashboard():
+    if not session.get('logged_in', False):
+        flash("You must login for that cuddy", "error")
+        return redirect(url_for('auth.login'))
+
+    return render_template('dashboard/index.html')

@@ -1,5 +1,4 @@
 import unittest
-from app.tests.test_base import AppTest
 from models import User, Address
 
 

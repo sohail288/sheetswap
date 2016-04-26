@@ -13,7 +13,7 @@ from datetime import datetime
 from app.db import Base
 
 #from models.sheets import Sheetmusic
-
+from models.trades import Trade
 
 class Item(Base):
 
@@ -37,6 +37,9 @@ class Item(Base):
     description = Column(Unicode(256))
     condition = Column(Unicode(32))
 
+    trades = relationship('Trade',
+                          primaryjoin="or_(Trade.item_from_id == Item.id, "
+                                      "Trade.item_to_id == Item.id)")
 
     def __repr__(self):
         return "<Item id = {} sheetmusic={} user={} condition={}>".format(self.id,

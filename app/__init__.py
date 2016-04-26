@@ -26,6 +26,9 @@ def create_app(app_settings = None):
     from .controllers.items import items_routes
     app.register_blueprint(items_routes)
 
+    from .controllers.trades import trade_routes
+    app.register_blueprint(trade_routes)
+
     bootstrap.init_app(app)
 
     return app
