@@ -4,8 +4,6 @@
     sheets | {{ sheet_music.title }}
 {% endblock sub_title %}
 {% block page_content %}
-    {% with items = sheet_music.items %}
-            <h1 class="jumbotron">Copies available for {{ sheet_music.title }}</h1>
-            {% include 'items/item_list.html' %}
-    {% endwith %}
+    <h1 class="jumbotron">Copies available for {{ sheet_music.title }}</h1>
+    {% include 'items/item_list.html' %}
 {% endblock page_content %}

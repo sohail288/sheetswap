@@ -59,6 +59,23 @@ def accept_trade(trade_id):
         session['trade_id'] = trade_id
         return redirect(url_for('.trading', from_user_id=trade.user_from_id))
 
+@trade_routes.route('/reject/<int:trade_id>', methods=['POST'])
+def reject_trade(trade_id):
+    trade = Trade.query.filter_by(id=trade_id).one()
+    from_user = User.query.filter_by(id=trade.user_from_id).one()
+
+    if trade.user_to_id != g.user.id:
+        return redirect("Are you crazy!", "error")
+    else:
+        trade.rejected = True
+        trade.trade_fin_timestamp = datetime.now()
+        trade.completed = True
+        g.db.commit()
+
+        flash("Rejected trade from {} for {}".format(from_user.username,
+            trade.item_to.sheetmusic.title))
+        return redirect(url_for('main.dashboard'))
+
 @trade_routes.route('/trading', methods=['POST', 'GET'])
 def trading():
 
@@ -70,6 +87,9 @@ def trading():
         trade.item_from = from_item
         trade.completed = True
         trade.trade_fin_timestamp = datetime.now()
+        trade.item_to.available =  False
+        trade.item_from.available = False
+
 
         g.db.add(trade)
         g.db.commit()
@@ -82,11 +102,13 @@ def trading():
         return redirect(url_for('main.dashboard'))
 
     from_user_id = int(request.args.get('from_user_id'))
-    items_to_trade_with = Item.query.filter_by(user_id=from_user_id)
+    from_user = User.query.filter_by(id=from_user_id).one()
+    items_to_trade_with = Item.query.filter_by(user_id=from_user_id).filter(Item.available == True).all()
     trading = session.pop('TRADING', None)
     trade_id = session.pop('trade_id', None)
 
     return render_template('trades/trading.html',
+                           from_user=from_user,
                            items=items_to_trade_with,
                            trade_id=trade_id,
                            trading=trading)

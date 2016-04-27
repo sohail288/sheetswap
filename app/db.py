@@ -25,11 +25,14 @@ Base.query = db_session.query_property()
 def init_db(seed_data=False, rebuild=False):
     # import model modules
     import models
-    Base.metadata.create_all(bind=engine)
 
     if rebuild:
-        if os.path.exists(db_uri):
-            os.remove(db_uri)
+        if 'sqlite' in db_uri:
+            db_path = db_uri.lstrip('sqlite:')
+            if os.path.exists(db_path):
+                os.remove(db_path)
+
+    Base.metadata.create_all(bind=engine)
 
     if seed_data:
         from util.seeding_scripts.load_data import load_data

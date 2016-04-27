@@ -52,7 +52,11 @@ def create():
 @sheets_routes.route('/<int:sheet_music_id>', methods=['GET'])
 def index(sheet_music_id):
     sheet_music = g.db.query(Sheetmusic).filter_by(id = sheet_music_id).first()
+    items_available = [item for item in sheet_music.items
+                       if not g.user or item.user_id != g.user.id]
 
-    return render_template('sheets/sheet_music_page.html', sheet_music=sheet_music)
+    return render_template('sheets/sheet_music_page.html',
+                           sheet_music=sheet_music,
+                           items = items_available)
 
 

@@ -20,7 +20,13 @@
         "instrumentation": "Piano, Voice, Guitar, Electric Guitar",
         "genre_tags": "Pop, Pop Rock, Soft Rock",
         "cover": "https://ec-assets.sheetmusicplus.com/items/2930795/cover_images/cover-medium_large_file.jpg"
+      },
+      {
+        "title": "Concerto in G for Piano and Orchestra",
+        "composer": "Maurice Ravel",
+        "instrumentation": "Piano, Orchestra",
+        "genre_tags": "impressionism",
+        "cover": "https://ec-assets.sheetmusicplus.com/items/4004106/cover_images/cover-medium_large_file.jpg"
       }
-
     ]
 }

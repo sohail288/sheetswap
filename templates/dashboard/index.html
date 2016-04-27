@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 {% import 'util.html' as util %}
 
+{% block styles %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='assets/css/dashboard/styles.css') }}"
+          rel="stylesheet">
+{% endblock styles %}
+
 {% block sub_title %}dashboard{% endblock %}
 {% block page_content %}
-    <h1>This is your dashboard {{ current_user }}</h1>
+    <h1>This is your dashboard, {{ current_user.username }}</h1>
 
     <h1>Trades Pending</h1>
     {% if trades %}
@@ -12,12 +18,15 @@
     {% for trade in trades %}
         <li>{{ trade }}
             {{  util.form_button(url_for('trades.accept_trade', trade_id=trade.id ),
-                    util.icon('thumbs-up')) }}
+                    util.icon('ok')) }}
+            {{  util.form_button(url_for('trades.reject_trade', trade_id=trade.id ),
+                    util.icon('remove', extra_classes=['reject-trade']) ) }}
         </li>
 
     {% endfor %}
     </ul>
-
+        {% else %}
+        <h1>No trades pending</h1>
     {% endif %}
 
     <h1> Trades Completed</h1>
@@ -27,7 +36,14 @@
                 <li>{{ trade }} </li>
             {% endfor %}
         </ul>
-
     {% endif %}
+
+    <h1>Trades Rejected</h1>
+        <ul>
+            {% for trade in rejected_trades %}
+                <li>{{ trade }}</li>
+            {% endfor %}
+        </ul>
+
 {% endblock page_content %}
 

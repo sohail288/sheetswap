@@ -9,6 +9,8 @@ import random
 from os import path
 import uuid
 
+from faker import Factory
+
 from app.db import db_session, init_db
 from config import get_env_config
 from models.sheets import Sheetmusic, Genre, Instrument
