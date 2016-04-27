@@ -25,11 +25,11 @@ class TradeModelPersistenceTests(DBTest):
 
         # from to swap
         with self.assertRaises(AssertionError):
-            trade = Trade( user_from_id=user_from.id,  user_to_id=user_to.id, item_from=item_to, item_to=item_from)
+            trade = Trade(user_from_id=user_from.id,  user_to_id=user_to.id, item_from=item_to, item_to=item_from)
 
         # to from swap
         with self.assertRaises(AssertionError):
-            trade = Trade(user_from_id=user_to.id, user_to_id=user_from.id, item_to=item_from, item_from=item_from)
+            trade = Trade(user_from_id=user_to.id, user_to_id=user_from.id, item_to=item_to, item_from=item_from)
 
 
 

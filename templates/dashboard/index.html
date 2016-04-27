@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% import 'util.html' as util %}
+
 {% block sub_title %}dashboard{% endblock %}
 {% block page_content %}
     <h1>This is your dashboard {{ current_user }}</h1>
@@ -6,9 +8,26 @@
     <h1>Trades Pending</h1>
     {% if trades %}
     <ul>
+
     {% for trade in trades %}
-        <li>{{ trade }}</li>
+        <li>{{ trade }}
+            {{  util.form_button(url_for('trades.accept_trade', trade_id=trade.id ),
+                    util.icon('thumbs-up')) }}
+        </li>
+
     {% endfor %}
     </ul>
+
+    {% endif %}
+
+    <h1> Trades Completed</h1>
+    {% if completed_trades %}
+        <ul>
+            {% for trade in completed_trades %}
+                <li>{{ trade }} </li>
+            {% endfor %}
+        </ul>
+
     {% endif %}
 {% endblock page_content %}
+

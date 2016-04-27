@@ -15,8 +15,10 @@ class Trade(Base):
         CheckConstraint('item_from_id != item_to_id')
     )
 
-    item_from_id = Column(Integer, ForeignKey('items.id'), nullable=False)
-    item_to_id = Column(Integer, ForeignKey('items.id'))
+    # item_from_id is allowed to be null because it is the one doing the requesting
+    # the item_to_id cannot be false, since someone has to initiate the trade
+    item_from_id = Column(Integer, ForeignKey('items.id'))
+    item_to_id = Column(Integer, ForeignKey('items.id'), nullable=False)
 
     item_from = relationship('Item', back_populates='trades', foreign_keys=[item_from_id])
     item_to   = relationship('Item', back_populates='trades', foreign_keys=[item_to_id])
@@ -31,20 +33,28 @@ class Trade(Base):
     trade_fin_timestamp = Column(DateTime())
 
 
-    @validates('item_from', 'item_to')
-    def validate_items_are_from_owners(self, key, item):
+    @validates('item_from', 'item_to', 'user_from_id', 'user_to_id')
+    def validate_items_are_from_owners(self, key, value):
         """
 
         :param key: the key that the signal will respond to, will be `item_from` or `item_to`
-        :param item: the item that will be a part of the signal
+        :param value: the item that will be a part of the signal
         :return: the item if it belongs to the trader
         """
-        if key == 'item_from':
-            assert item.user.id == self.user_from_id
-        elif key == 'item_to':
-            assert item.user.id == self.user_to_id
+        if key == 'item_from' or key == 'user_from_id':
+            if key == 'item_from' and self.user_from_id:
+                assert value.user.id == self.user_from_id
+            elif key == 'user_from_id' and self.item_from:
+                assert value == self.item_from.user.id
 
-        return item
+        elif key == 'item_to' or key == 'user_to_id':
+            if key == 'item_to' and self.user_to_id:
+                assert value.user.id == self.user_to_id
+            elif key == 'user_to_id' and self.item_to:
+                assert value == self.item_to.user.id
+
+        return value
+
 
     def __repr__(self):
         return "<Trade from_user={} to_user={} from_item={} to_item={}>".format(

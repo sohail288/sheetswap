@@ -14,6 +14,7 @@ from config import get_env_config
 from models.sheets import Sheetmusic, Genre, Instrument
 from models.auth   import User, Address
 from models.items import Item, ItemImage
+from models.trades import Trade
 
 
 config_obj = get_env_config()
@@ -80,7 +81,25 @@ def load_items(n=50):
         db_session.commit()
 
 
+def load_trades(n=10):
+    """ Create and store several trade items.
+    :return: None
+    """
+    random.seed(0)
+    items = db_session.query(Item).all()
+    users = db_session.query(User).all()
 
+    for i in range(n):
+        from_user, to_user = random.sample(users, 2)
+        from_item, to_item = random.choice(from_user.items), random.choice(to_user.items)
+
+        trade = Trade(user_from_id=from_user.id,
+                  user_to_id=to_user.id,
+                  item_from = from_item,
+                  item_to = to_item)
+        print(trade)
+        db_session.add(trade)
+        db_session.commit()
 
 
 def load_data(*args, **kwargs):
@@ -90,7 +109,7 @@ def load_data(*args, **kwargs):
     load_sheet_music()
     load_users()
     load_items()
-
+    load_trades()
     db_session.remove()
 
 

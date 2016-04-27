@@ -1,8 +1,26 @@
+{% import 'util.html' as util %}
+
+
 <li class="item-stub col-xs-12 col-sm-6 col-lg-3">
     <div class="panel panel-default">
+        {% if not trading %}
         <div class="panel-heading">
-            {{ item.sheetmusic.title }}
+            {% with post_url = url_for('trades.request_trade', requested_item_id=item.id) %}
+                {{ item.sheetmusic.title }} {{  util.form_button(post_url, util.icon('random'))  }}
+            {% endwith %}
         </div>
+        {%  else %}
+        <div class="panel-heading">
+            {% with post_url = url_for('trades.trading') %}
+                {{ item.sheetmusic.title }}
+                {{  util.form_button(post_url,
+                        util.icon('thumbs-up'),
+                        input=True,
+                        input_value= item.id ~ " " ~ trade_id,
+                        input_name="trade_item")  }}
+            {% endwith %}
+        </div>
+        {% endif %}
         <div class="Panel-body">
             {{ item.condition }}
         </div>

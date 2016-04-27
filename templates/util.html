@@ -49,6 +49,11 @@
 {%- endmacro %}
 
 
-{% macro form_button(url, content, method='post', class='btn-link') -%}
-<form style="display: inline;" action='{{url}}' method='{{method}}'><button class="{{class|safe}}">{{content}}</button></form>
+{% macro form_button(url, content, method='post', class='btn-link', input=False, input_value=None, input_name=None) -%}
+<form style="display: inline;" action='{{url}}' method='{{method}}'>
+    {% if input and input_value and input_name%}
+    <input type="hidden" value="{{ input_value }}" name="{{ input_name }}">
+    {% endif %}
+    <button class="{{class|safe}}">{{content}}</button>
+</form>
 {%- endmacro %}

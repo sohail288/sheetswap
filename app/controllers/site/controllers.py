@@ -36,9 +36,10 @@ def search_results():
 
 @main_routes.route('/dashboard')
 def dashboard():
-    trades_for_user = g.db.query(Trade).filter(Trade.user_to_id == g.user.id).all()
+    trades_for_user = g.db.query(Trade).filter(Trade.user_to_id == g.user.id).filter(Trade.completed == False).all()
+    completed_trades = g.db.query(Trade).filter(Trade.user_to_id == g.user.id).filter(Trade.completed == True).all()
     if not session.get('logged_in', False):
         flash("You must login for that", "error")
         return redirect(url_for('auth.login'))
 
-    return render_template('dashboard/index.html', trades=trades_for_user)
+    return render_template('dashboard/index.html', trades=trades_for_user, completed_trades=completed_trades)

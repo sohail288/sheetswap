@@ -1,5 +1,8 @@
 """ Controllers for trade """
+from datetime import datetime
+
 from flask import (request,
+                   session,
                    g,
                    url_for,
                     flash,
@@ -28,5 +31,70 @@ def main(trade_id):
         return redirect('main.dashboard')
 
     return render_template('trades/main.html', trade=trade)
+
+
+@trade_routes.route('/request/<int:requested_item_id>', methods=['POST'])
+def request_trade(requested_item_id):
+    requested_item = Item.query.filter_by(id=requested_item_id).one()
+    to_user_id = requested_item.user.id
+    from_user_id = g.user.id
+
+    new_trade = Trade(user_from_id = from_user_id,
+                      user_to_id = to_user_id,
+                      item_to=requested_item)
+    g.db.add(new_trade)
+    g.db.commit()
+    flash("post worked", "success")
+    return redirect(url_for('main.index'))
+
+@trade_routes.route('/accept/<int:trade_id>', methods=['POST'])
+def accept_trade(trade_id):
+    trade = Trade.query.filter_by(id=trade_id).one()
+
+    if trade.user_to_id != g.user.id:
+        return redirect("Are you crazy!", "error")
+
+    else:
+        session['TRADING'] = True
+        session['trade_id'] = trade_id
+        return redirect(url_for('.trading', from_user_id=trade.user_from_id))
+
+@trade_routes.route('/trading', methods=['POST', 'GET'])
+def trading():
+
+    if request.method == 'POST':
+        from_item_id, trade_id = [int(tok) for tok in request.form.get('trade_item').split()]
+        trade = g.db.query(Trade).filter_by(id=trade_id).one()
+        from_item = Item.query.filter_by(id=from_item_id).one()
+
+        trade.item_from = from_item
+        trade.completed = True
+        trade.trade_fin_timestamp = datetime.now()
+
+        g.db.add(trade)
+        g.db.commit()
+
+        flash("trade completed", "success")
+        return redirect(url_for('main.dashboard'))
+
+    if not session.get('TRADING', False):
+        flash("Your trading session expired.  Try it again.")
+        return redirect(url_for('main.dashboard'))
+
+    from_user_id = int(request.args.get('from_user_id'))
+    items_to_trade_with = Item.query.filter_by(user_id=from_user_id)
+    trading = session.pop('TRADING', None)
+    trade_id = session.pop('trade_id', None)
+
+    return render_template('trades/trading.html',
+                           items=items_to_trade_with,
+                           trade_id=trade_id,
+                           trading=trading)
+
+#@trade_routes.route('/complete/<int:item_id>/<int:trade_id>')
+#def complete(item_id, trade_id):
+
+
+
 
 
