@@ -1,4 +1,8 @@
 import unittest
+from selenium import webdriver
+import threading
+import time
+
 from flask import current_app
 from app.db import init_db, db_session, get_db_metadata
 from app import create_app
@@ -38,3 +42,56 @@ class DBTest(unittest.TestCase):
         self.meta_db.drop_all()
         if 'sqlite' in self.config_obj.db_path:
             os.remove(os.path.join(self.config_obj.BASE_DIR, self.config_obj.db_path))
+
+class SeleniumTest(unittest.TestCase):
+    client = None
+    @classmethod
+    def setUpClass(cls):
+        # start the driver
+        try:
+            cls.client = webdriver.Firefox()
+        except:
+            pass
+
+        if cls.client:
+            os.environ['APP_SETTINGS'] == 'testing' or os.environ.update(APP_SETTINGS='testing')
+            cls.config_obj = get_env_config()
+            cls.app = create_app()
+            cls.app_context = cls.app.app_context()
+            cls.app_context.push()
+
+            # supress logging
+            import logging
+            logger = logging.getLogger('werkzeug')
+            logger.setLevel("ERROR")
+
+            cls.db = db_session()
+            cls.meta_db = get_db_metadata()
+            init_db(seed_data=True)
+
+            threading.Thread(target=cls.app.run).start()
+
+    @classmethod
+    def tearDownClass(cls):
+
+        if cls.client:
+            cls.client.get('http://localhost:5000/testing/shutdown')
+            cls.client.close()
+
+            db_session.remove()
+            cls.meta_db.drop_all()
+            if 'sqlite' in cls.config_obj.db_path:
+                os.remove(os.path.join(cls.config_obj.BASE_DIR, cls.config_obj.db_path))
+            cls.app_context.pop()
+            print("done with selenium test")
+
+    def setUp(self):
+        if not self.client:
+            self.skipTest("Client not initialized")
+        else:
+            time.sleep(1)
+
+    def tearDown(self):
+        pass
+
+

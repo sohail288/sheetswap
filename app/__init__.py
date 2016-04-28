@@ -29,6 +29,10 @@ def create_app(app_settings = None):
     from .controllers.trades import trade_routes
     app.register_blueprint(trade_routes)
 
+    if hasattr(config_obj, 'TESTING'):
+        from .controllers.testing import tests
+        app.register_blueprint(tests)
+
     bootstrap.init_app(app)
 
     return app
