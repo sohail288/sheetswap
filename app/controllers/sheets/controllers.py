@@ -9,6 +9,7 @@ from flask import (g,
                     url_for,
                    redirect)
 
+from sqlalchemy.sql import text
 from . import sheets_routes
 
 from models.sheets import (Sheetmusic, Genre, Instrument)
@@ -60,8 +61,13 @@ def create():
 @sheets_routes.route('/<int:sheet_music_id>', methods=['GET'])
 def index(sheet_music_id):
     sheet_music = g.db.query(Sheetmusic).filter_by(id = sheet_music_id).first()
+    if g.user:
+        requested_items = [trade[0] for trade in
+                           g.db.execute(text("SELECT item_to_id FROM trades WHERE trades.user_from_id=:x")
+                                        .params(x=g.user.id)).fetchall()]
     items_available = [item for item in sheet_music.items
-                       if not g.user or item.user_id != g.user.id]
+                       if not g.user or item.user_id != g.user.id
+                       and item.id not in requested_items]
 
     return render_template('sheets/sheet_music_page.html',
                            sheet_music=sheet_music,

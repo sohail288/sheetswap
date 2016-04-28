@@ -44,7 +44,9 @@ def request_trade(requested_item_id):
                       item_to=requested_item)
     g.db.add(new_trade)
     g.db.commit()
-    flash("post worked", "success")
+    flash("Requested a trade for {} with {}".format(requested_item.sheetmusic.title,
+                                                    requested_item.user.username),
+          "success")
     return redirect(url_for('main.index'))
 
 @trade_routes.route('/accept/<int:trade_id>', methods=['POST'])
@@ -52,7 +54,8 @@ def accept_trade(trade_id):
     trade = Trade.query.filter_by(id=trade_id).one()
 
     if trade.user_to_id != g.user.id:
-        return redirect("Are you crazy!", "error")
+        flash("Are you crazy!", 'error')
+        return redirect("main.dashboard")
 
     else:
         session['TRADING'] = True
@@ -90,7 +93,6 @@ def trading():
         trade.item_to.available =  False
         trade.item_from.available = False
 
-        g.db.add(trade)
         g.db.commit()
 
         flash("trade completed", "success")
