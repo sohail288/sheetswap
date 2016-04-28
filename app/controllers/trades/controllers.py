@@ -90,7 +90,6 @@ def trading():
         trade.item_to.available =  False
         trade.item_from.available = False
 
-
         g.db.add(trade)
         g.db.commit()
 

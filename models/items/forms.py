@@ -1,10 +1,25 @@
-from wtforms import Form, StringField, TextAreaField, validators, HiddenField
+from wtforms import (Form,
+                     StringField,
+                     TextAreaField,
+                     validators,
+                     HiddenField,
+                     FileField,
+                     SelectField
+                     )
 
+from models.common.forms.forms import HiddenInteger
+
+condition_choices = [
+    ('new', 'New'),
+    ('clean', 'Clean'),
+    ('marked', 'Has markings'),
+    ('missing','Is missing pages'),
+    ('torn', 'Torn pages, but all there'),
+    ('old', 'Oldish')
+]
 
 class CreateItemForm(Form):
-    sheetmusic_id = HiddenField()
-
-    condition   = StringField
+    sheetmusic_id = HiddenInteger("sheetmusic_id")
     description = TextAreaField()
-
-
+    images = FileField('Sheetmusic Images', render_kw={'multiple':True})
+    condition = SelectField('Condition', choices=condition_choices)

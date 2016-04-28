@@ -36,15 +36,23 @@ def main():
 @sheets_routes.route('/create', methods=['POST', 'GET'])
 def create():
     form = SheetMusicForm(request.form)
-
     if request.method == 'POST' and form.validate():
-        sheet_music = Sheetmusic()
-        populate_sheet_music(form, sheet_music)
-        g.db.add(sheet_music)
+        sheetmusic = Sheetmusic()
+        populate_sheet_music(form, sheetmusic)
+        g.db.add(sheetmusic)
         g.db.commit()
 
-        flash("Added {}".format(form.title))
-        return redirect(url_for('.main'))
+        if form.creating_item.data:
+            flash("{} has been added to the database. Enter your copy's details below".format(sheetmusic.title),
+                  "success")
+            return redirect(url_for('items.create', sheetmusic_id = sheetmusic.id))
+
+        else:
+            flash("Added {}".format(form.title))
+            return redirect(url_for('.main'))
+
+
+    form.creating_item.data = int(request.args.get("creating_item", 0))
 
     return render_template('sheets/create_sheet_music.html', form=form)
 

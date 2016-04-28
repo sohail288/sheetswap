@@ -29,7 +29,7 @@ class Item(Base):
 
     available = Column(Boolean(), default=True)
 
-    images = relationship('ItemImage', back_populates='item')
+    _images = relationship('ItemImage', back_populates='item')
 
     added_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
@@ -40,6 +40,18 @@ class Item(Base):
     trades = relationship('Trade',
                           primaryjoin="or_(Trade.item_from_id == Item.id, "
                                       "Trade.item_to_id == Item.id)")
+
+    @property
+    def images(self):
+        return [item_image.image for item_image in self._images]
+
+    @images.setter
+    def images(self, value):
+        """
+        :param value: the image to be set
+        :return: None, you cannot set the item this way
+        """
+        pass
 
     def __repr__(self):
         return "<Item id = {} sheetmusic={} user={} condition={}>".format(self.id,
@@ -52,7 +64,7 @@ class ItemImage(Base):
     __tablename__ = 'item_images'
 
     item_id =  Column(Integer, ForeignKey('items.id'))
-    item = relationship('Item', back_populates='images')
+    item = relationship('Item', back_populates='_images')
     timestamp = Column(DateTime(), default=datetime.now)
     image = Column(Unicode(256), nullable=False, unique=True)
 

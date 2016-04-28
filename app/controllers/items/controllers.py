@@ -10,7 +10,9 @@ from flask import (g,
                    render_template)
 
 from . import items_routes
-from models.items import Item
+from models import Item, Sheetmusic
+from models.items.forms import CreateItemForm
+from models.sheets.forms import SheetMusicForm
 
 
 @items_routes.route('/')
@@ -20,12 +22,25 @@ def main():
 
 @items_routes.route('/create', methods=['POST', 'GET'])
 def create():
-    posting = 'not posting'
-    if request.method == 'POST':
-        posting = 'posting'
-        # redirect to item page
+    form = CreateItemForm(request.form)
+    if request.method == 'POST' and form.validate():
+        sheetmusic_id = form.sheetmusic_id.data
+        sheetmusic = Sheetmusic.query.filter_by(id=sheetmusic_id).one()
+        new_item = Item()
+        form.populate_obj(new_item)
 
-    return render_template('items/create_item.html', posting=posting)
+        new_item.user_id = g.user.id
+
+        g.db.add(new_item)
+        g.db.commit()
+
+        flash("Your item is new item!", "success")
+        return redirect(url_for('main.dashboard'))
+
+    sheetmusic_id = int(request.args.get('sheetmusic_id', 0))
+    if sheetmusic_id:
+        form.sheetmusic_id.data = sheetmusic_id
+    return render_template('items/create_item.html', form=form)
 
 @items_routes.route('/<int:item_id>')
 def index(item_id):

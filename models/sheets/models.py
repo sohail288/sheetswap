@@ -93,6 +93,9 @@ class Genre(Base):
     def __repr__(self):
         return "<Genre id={} name={}>".format(self.id, self.name)
 
+    def __eq__(self, other):
+        return bool(isinstance(other, type(self)) and self.name == other.name)
+
 
 class Instrument(Base):
     """ Defines an Instrument model. One Sheetmusic can have multiple Instruments"""
@@ -113,6 +116,6 @@ class Instrument(Base):
         :param other: The other instrument object
         :return: boolean True if both objects are equal
         """
-        return bool(self.name == other.name)
+        return bool(isinstance(other, type(self)) and self.name == other.name)
 
 

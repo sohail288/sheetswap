@@ -9,6 +9,7 @@
                 {% set error = None %}
                 {% set group_error= "" %}
             {% endif %}
+            {% if field.type not in  ["HiddenField", "HiddenInteger"] %}
             <div class="form-group {{ group_error }}">
                 {{ field.label }}
                 {{ field(class_="form-control") }}
@@ -18,6 +19,10 @@
                     </span>
                 {% endif %}
             </div>
+            {% else %}
+                {{ field() }}
+            {% endif %}
+
         {% endfor %}
         <button type="submit" class="btn btn-group-lg">Submit</button>
     </form>
