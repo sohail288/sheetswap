@@ -67,7 +67,8 @@ def index(sheet_music_id):
                                         .params(x=g.user.id)).fetchall()]
     items_available = [item for item in sheet_music.items
                        if not g.user or item.user_id != g.user.id
-                       and item.id not in requested_items]
+                       and item.id not in requested_items
+                       and item.available]
 
     return render_template('sheets/sheet_music_page.html',
                            sheet_music=sheet_music,

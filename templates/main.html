@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
+{% block styles %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='assets/css/main/styles.css') }}"
+          rel="stylesheet">
+{% endblock styles %}
+
 {% block page_content %}
-    <div class="container jumbotron text-center">
+    <div class="jumbotron text-center">
         <h1>Trade your sheet music!</h1>
         <form action="{{ url_for('.search_results') }}" method="GET">
             <input name="q" class='form-control input-lg' type="text" placeholder="Vivaldi 4 Seasons">

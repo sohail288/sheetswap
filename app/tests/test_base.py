@@ -1,13 +1,14 @@
+import os
+import sys
 import unittest
 from selenium import webdriver
 import threading
-import time
 
 from flask import current_app
 from app.db import init_db, db_session, get_db_metadata
-from app import create_app
-import os
 from config import get_env_config
+from run import get_decorated_app
+from app import create_app
 
 class AppTest(unittest.TestCase):
     def setUp(self):
@@ -45,6 +46,8 @@ class DBTest(unittest.TestCase):
 
 class SeleniumTest(unittest.TestCase):
     client = None
+
+
     @classmethod
     def setUpClass(cls):
         # start the driver
@@ -56,8 +59,8 @@ class SeleniumTest(unittest.TestCase):
         if cls.client:
             os.environ['APP_SETTINGS'] == 'testing' or os.environ.update(APP_SETTINGS='testing')
             cls.config_obj = get_env_config()
-            cls.app = create_app()
-            cls.app_context = cls.app.app_context()
+            cls.app = get_decorated_app()
+            cls.app_context = cls.app.test_request_context()
             cls.app_context.push()
 
             # supress logging
@@ -67,15 +70,20 @@ class SeleniumTest(unittest.TestCase):
 
             cls.db = db_session()
             cls.meta_db = get_db_metadata()
-            init_db(seed_data=True)
+            init_db(seed_data=True, rebuild=True)
 
-            threading.Thread(target=cls.app.run).start()
+            # the server url
+            cls.host = 'localhost'
+            cls.port = 5001
+            cls.server_url = 'http://{}:{}'.format(cls.host, cls.port)
+
+            threading.Thread(target=lambda: cls.app.run(port=cls.port)).start()
 
     @classmethod
     def tearDownClass(cls):
 
         if cls.client:
-            cls.client.get('http://localhost:5000/testing/shutdown')
+            cls.client.get("{}/{}".format(cls.server_url, 'testing/shutdown'))
             cls.client.close()
 
             db_session.remove()
@@ -83,13 +91,13 @@ class SeleniumTest(unittest.TestCase):
             if 'sqlite' in cls.config_obj.db_path:
                 os.remove(os.path.join(cls.config_obj.BASE_DIR, cls.config_obj.db_path))
             cls.app_context.pop()
-            print("done with selenium test")
 
     def setUp(self):
         if not self.client:
             self.skipTest("Client not initialized")
         else:
-            time.sleep(1)
+            self.client.implicitly_wait(3)
+
 
     def tearDown(self):
         pass

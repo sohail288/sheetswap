@@ -35,6 +35,8 @@ def inject_user():
         context = dict(current_user=None)
     return context
 
+def get_decorated_app():
+    return smtrade
 
 if __name__ == "__main__":
     manager.run()
