@@ -63,7 +63,43 @@ class AnonymousTests(SeleniumTest):
         # satisified she closes her browser
 
 
+    def test_anonymous_users_can_register_if_they_want_to(self):
+        # the potential user is back and wants to register
+        self.client.get("{}/".format(self.server_url))
+        login_button = self.client.find_element_by_link_text('Login')
+        login_button.click()
 
+        # she sees that there is a link to register
+        register_link = self.client.find_element_by_link_text('Register')
 
+        # she clicks it and goes to the register page
+        register_link.click()
+
+        # here she is faced with a simple registration form
+        # she fills it out following all the instructions
+        email = self.client.find_element_by_id('email')
+        username = self.client.find_element_by_id('username')
+        password = self.client.find_element_by_id('password')
+        check_password = self.client.find_element_by_id('check_password')
+
+        email.send_keys('barbara@email.com')
+        username.send_keys('barbara')
+        password.send_keys('password')
+        check_password.send_keys('password')
+
+        # she sees the submit button
+        submit = self.client.find_element_by_xpath('//button[@type="submit"]')
+
+        # she clicks it
+        submit.click()
+
+        # she is taken to the main page
+        self.assertEqual(self.client.current_url, "{}/".format(self.server_url))
+
+        # where she sees that there is an alert
+        alert = self.client.find_element_by_css_selector('.alert')
+
+        # that says thanks for registering
+        self.assertIn('Thanks for registering', alert.text)
 
 

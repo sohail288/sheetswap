@@ -4,7 +4,9 @@
 {% block sub_title %}login{% endblock sub_title %}
 
 {% block page_content %}
-    <h1> LOGIN </h1>
+    <h1> LOGIN | <a href="{{ url_for('.register') }}">Register</a></h1>
     {{  forms.create_form(form, '.login') }}
+
+
 {% endblock page_content %}
 
