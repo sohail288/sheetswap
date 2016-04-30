@@ -4,11 +4,12 @@
 
 from flask.ext.script import Manager
 from flask import g, session
+
 from app import create_app
-
 from app.db import db_session, init_db
-
 from models.auth import User
+from util.jinja_filters.jinja_filters import pluralize
+
 
 smtrade = create_app()
 manager = Manager(smtrade)
@@ -35,8 +36,14 @@ def inject_user():
         context = dict(current_user=None)
     return context
 
+@smtrade.context_processor
+def inject_pluralize():
+    return dict(pluralize=pluralize)
+
 def get_decorated_app():
     return smtrade
+
+
 
 if __name__ == "__main__":
     manager.run()

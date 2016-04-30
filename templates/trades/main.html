@@ -8,5 +8,15 @@
 
     <h1> This trade is happening between {{ trade.user_from_id }} and {{ trade.user_to_id }}</h1>
 
+    {% if trade.completed and not trade.rejected %}
+        <div class="lead address">
+           {{ user_from.addresses[0] }}
+        </div>
+
+        <div class="lead address">
+            {{ user_to.addresses[0] }}
+        </div>
+
+    {% endif %}
 
 {% endblock page_content %}

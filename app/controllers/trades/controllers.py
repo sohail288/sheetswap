@@ -30,7 +30,12 @@ def main(trade_id):
         flash("That trade doesn't exist or you are not a part of it")
         return redirect('main.dashboard')
 
-    return render_template('trades/main.html', trade=trade)
+    user_from = User.query.filter_by(id=trade.user_from_id).one()
+    user_to   = User.query.filter_by(id=trade.user_to_id).one()
+
+    return render_template('trades/main.html', trade=trade,
+                           user_from=user_from,
+                           user_to=user_to)
 
 
 @trade_routes.route('/request/<int:requested_item_id>', methods=['POST'])
@@ -96,7 +101,7 @@ def trading():
         g.db.commit()
 
         flash("trade completed", "success")
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('.main', trade_id=trade.id))
 
     if not session.get('TRADING', False):
         flash("Your trading session expired.  Try it again.")

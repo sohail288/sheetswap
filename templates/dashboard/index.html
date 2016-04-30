@@ -13,40 +13,25 @@
 
     {% if trades %}
     <h1>Trades Pending</h1>
-    <ul>
-
-    {% for trade in trades %}
-        <li>{{ trade }}
-            {{  util.form_button(url_for('trades.accept_trade', trade_id=trade.id ),
-                    util.icon('ok')) }}
-            {{  util.form_button(url_for('trades.reject_trade', trade_id=trade.id ),
-                    util.icon('remove', extra_classes=['reject-trade']) ) }}
-        </li>
-
-    {% endfor %}
-    </ul>
+        {% include 'trades/trade_list.html' %}
         {% else %}
         <h1>No trades pending</h1>
     {% endif %}
 
     {% if completed_trades %}
     <h1> Trades Completed</h1>
-        <ul>
-            {% for trade in completed_trades %}
-                <li>{{ trade }} </li>
-            {% endfor %}
-        </ul>
+        {% with trades=completed_trades %}
+        {% include 'trades/trade_list.html' %}
+        {% endwith %}
     {% else %}
         <h1>No completed Trades</h1>
     {% endif %}
 
     {% if rejected_trades %}
     <h1>Trades Rejected</h1>
-        <ul>
-            {% for trade in rejected_trades %}
-                <li>{{ trade }}</li>
-            {% endfor %}
-        </ul>
+        {% with trades=rejected_trades %}
+        {% include 'trades/trade_list.html' %}
+        {% endwith %}
     {% else %}
         <h1> No rejected trades</h1>
     {% endif %}
