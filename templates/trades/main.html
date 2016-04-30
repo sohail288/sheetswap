@@ -2,11 +2,31 @@
 
 {% block page_content %}
 
-    <h1> This is your trade between {{ trade.item_from.sheetmusic.title }} and
-         {{ trade.item_to.sheetmusic.title }}
-    </h1>
 
-    <h1> This trade is happening between {{ trade.user_from_id }} and {{ trade.user_to_id }}</h1>
+    {% if trade.completed and not trade.rejected %}
+        <h1>Trade Completed! Here are the addresses you two should use for the swap!</h1>
+        {% set address = user_from.addresses[0] %}
+        <h3>{{ user_from.username }}</h3>
+        <div class="lead address">
+            <p>{{ address.street_address }}</p>
+            <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+            <p>{{ address.country }}</p>
+        </div>
 
+        {% set address = user_to.addresses[0] %}
+        <h3>{{ user_to.username }}</h3>
+        <div class="lead address">
+            <p>{{ address.street_address }}</p>
+            <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+            <p>{{ address.country }}</p>
+        </div>
+    {% else %}
+        <h1> This is your trade between {{ trade.item_from.sheetmusic.title }} and
+            {{ trade.item_to.sheetmusic.title }}
+        </h1>
+
+        <h1> This trade is happening between {{ trade.user_from_id }} and {{ trade.user_to_id }}</h1>
+
+    {% endif %}
 
 {% endblock page_content %}

@@ -36,7 +36,7 @@ def load_sheet_music():
                 new_obj.parse_tags(genres, Genre, 'genre_tags')
 
                 db_session.add(new_obj)
-                print("added", new_obj)
+                # print("added", new_obj)
                 db_session.commit()
 
 
@@ -54,7 +54,7 @@ def load_users():
                 new_user_obj.addresses = new_address_objs
 
                 db_session.add(new_user_obj)
-                print("added", new_user_obj, new_address_objs)
+                # print("added", new_user_obj, new_address_objs)
                 db_session.commit()
 
 def load_items(n=50):
@@ -79,7 +79,7 @@ def load_items(n=50):
         item.images = [ItemImage("{}_{}".format(user.username, uuid.uuid4())) for i in range(4)]
 
         db_session.add(item)
-        print(item)
+        # print(item)
         db_session.commit()
 
 
@@ -99,7 +99,7 @@ def load_trades(n=10):
                   user_to_id=to_user.id,
                   item_from = from_item,
                   item_to = to_item)
-        print(trade)
+        # print(trade)
         db_session.add(trade)
         db_session.commit()
 

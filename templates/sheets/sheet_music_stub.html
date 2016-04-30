@@ -19,7 +19,7 @@
 
         {% set num_items = sheet_music.items |  selectattr('available')| list | count %}
         <div class=" text-center">
-            {{ num_items }} copies available !
+            {{ num_items }} {{ pluralize("copy", num_items, "copies") }} available!
         </div>
 
     </div>

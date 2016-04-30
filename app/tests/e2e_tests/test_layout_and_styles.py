@@ -7,7 +7,6 @@ class StyleTests(SeleniumTest):
     def test_check_styles(self):
 
         self.client.get('{}/{}'.format(self.server_url, 'sheets'))
-        time.sleep(10)
 
         # omega gets on the computer and logs into sheetswap
         self.client.get('{}/'.format(self.server_url))

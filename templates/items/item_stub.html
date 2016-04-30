@@ -7,7 +7,7 @@
         {% if trading %}
             {% set post_url = url_for('trades.trading') %}
             {% set form_button = util.form_button(post_url,
-                util.icon('thumbs-up'),
+                util.icon('thumbs-up', extra_classes=['accept-trade']),
                         input=True,
                         input_value= item.id ~ " " ~ trade_id,
                         input_name="trade_item") %}
@@ -22,6 +22,7 @@
         </div>
         <div class="Panel-body">
             {{ item.condition }}
+            {{ item.user.username }}
         </div>
     </div>
 </li>
