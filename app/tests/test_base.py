@@ -21,7 +21,7 @@ class AppTest(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.db = db_session()
-        init_db()
+        init_db(rebuild=True)
         self.meta_db = get_db_metadata()
         self.client = self.app.test_client(use_cookies=True)
 
@@ -30,7 +30,7 @@ class AppTest(unittest.TestCase):
         db_session.remove()
         self.meta_db.drop_all()
         self.app_context.pop()
-        if 'sqlite' in self.config_obj.db_path:
+        if 'sqlite' in self.config_obj.SQLALCHEMY_DATABASE_URI:
             os.remove(os.path.join(self.config_obj.BASE_DIR, self.config_obj.db_path))
 
 class DBTest(unittest.TestCase):
@@ -44,7 +44,7 @@ class DBTest(unittest.TestCase):
     def tearDown(self):
         db_session.remove()
         self.meta_db.drop_all()
-        if 'sqlite' in self.config_obj.db_path:
+        if 'sqlite' in self.config_obj.SQLALCHEMY_DATABASE_URI:
             os.remove(os.path.join(self.config_obj.BASE_DIR, self.config_obj.db_path))
 
 class SeleniumTest(unittest.TestCase):
@@ -72,8 +72,8 @@ class SeleniumTest(unittest.TestCase):
             logger.setLevel("ERROR")
 
             cls.db = db_session()
-            cls.meta_db = get_db_metadata()
             init_db(seed_data=True, rebuild=True)
+            cls.meta_db = get_db_metadata()
 
             # the server url
             cls.host = 'localhost'
@@ -91,7 +91,7 @@ class SeleniumTest(unittest.TestCase):
 
             db_session.remove()
             cls.meta_db.drop_all()
-            if 'sqlite' in cls.config_obj.db_path:
+            if 'sqlite' in cls.config_obj.SQLALCHEMY_DATABASE_URI:
                 os.remove(os.path.join(cls.config_obj.BASE_DIR, cls.config_obj.db_path))
             cls.app_context.pop()
 

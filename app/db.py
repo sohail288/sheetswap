@@ -31,6 +31,9 @@ def init_db(seed_data=False, rebuild=False):
             db_path = db_uri.lstrip('sqlite:')
             if os.path.exists(db_path):
                 os.remove(db_path)
+        else:
+            metadata = get_db_metadata()
+            metadata.drop_all()
 
     Base.metadata.create_all(bind=engine)
 

@@ -16,7 +16,7 @@ class User(Base):
 
     email = Column(Unicode(256), unique=True, nullable=False)
     username = Column(Unicode(256), unique=True, nullable=False)
-    password_hash = Column(Unicode(32), nullable=False )
+    password_hash = Column(Unicode(128), nullable=False )
     admin =  Column(Boolean(), default=False)
     created_on = Column(DateTime(), default = datetime.now)
     updated_on = Column(DateTime(), default = datetime.now, onupdate=datetime.now)
