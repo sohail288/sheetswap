@@ -120,6 +120,7 @@ class SeleniumTest(unittest.TestCase):
         client.find_element_by_id('title').send_keys(title)
         client.find_element_by_id('composer').send_keys(composer)
         client.find_element_by_xpath('//button[@type="submit"]').click()
+        time.sleep(5)
         dd = Select(client.find_element_by_id('condition'))
         dd.select_by_visible_text(condition)
         client.find_element_by_xpath('//button[@type="submit"]').click()
@@ -129,6 +130,7 @@ class SeleniumTest(unittest.TestCase):
             self.skipTest("Client not initialized")
         else:
             self.client.implicitly_wait(3)
+            init_db(seed_data=True, rebuild=True)
 
     def tearDown(self):
         """
@@ -136,4 +138,10 @@ class SeleniumTest(unittest.TestCase):
         :return: None
         """
         if hasattr(self, 'other_client'):
-            self.other_client.close()
+            try:
+                self.other_client.close()
+            except ConnectionRefusedError:
+                pass
+
+        db_session.remove()
+        self.meta_db.drop_all()

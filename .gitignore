@@ -101,3 +101,6 @@ notes.txt
 
 # env
 .env_local
+
+# scratch ipynb
+scratch.ipynb

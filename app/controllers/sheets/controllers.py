@@ -15,6 +15,8 @@ from . import sheets_routes
 from models.sheets import (Sheetmusic, Genre, Instrument)
 from models.sheets.forms import SheetMusicForm
 
+from app.decorators import user_is_logged_in
+
 
 def populate_sheet_music(form, sheet_music):
     for field in ['title', 'composer', 'time_signature', 'cover', 'arranged_by']:
@@ -35,6 +37,7 @@ def main():
 
 
 @sheets_routes.route('/create', methods=['POST', 'GET'])
+@user_is_logged_in
 def create():
     form = SheetMusicForm(request.form)
     if request.method == 'POST' and form.validate():

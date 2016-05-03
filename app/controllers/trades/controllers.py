@@ -14,7 +14,16 @@ from models import Trade, Item, User
 
 from . import trade_routes
 
+from app.decorators import user_is_part_of_trade, user_is_logged_in
+
+
+@trade_routes.before_request
+@user_is_logged_in
+def before_request():
+    pass
+
 @trade_routes.route('/<int:trade_id>')
+@user_is_part_of_trade()
 def main(trade_id):
     """ this is the main controller for a trade.  It is the basis of a trade where two users can see what's going on
     :param trade_id: This is the id of the trade
@@ -22,16 +31,12 @@ def main(trade_id):
     """
     trade = Trade.query.filter_by(id=trade_id).one_or_none()
 
-    if not (g.user.id == trade.user_from_id or g.user.id == trade.user_to_id):
-        flash('You are not a part of that trade')
-        return redirect('main.dashboard')
-
     if not trade:
-        flash("That trade doesn't exist or you are not a part of it")
+        flash("That trade doesn't exist", 'error')
         return redirect('main.dashboard')
 
-    user_from = User.query.filter_by(id=trade.user_from_id).one()
-    user_to   = User.query.filter_by(id=trade.user_to_id).one()
+    user_from = trade.user_from
+    user_to   = trade.user_to
 
     return render_template('trades/main.html', trade=trade,
                            user_from=user_from,
@@ -81,7 +86,7 @@ def reject_trade(trade_id):
         g.db.commit()
 
         flash("Rejected trade from {} for {}".format(from_user.username,
-            trade.item_to.sheetmusic.title))
+            trade.item_to.sheetmusic.title), 'error')
         return redirect(url_for('main.dashboard'))
 
 @trade_routes.route('/trading', methods=['POST', 'GET'])

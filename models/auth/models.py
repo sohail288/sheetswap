@@ -24,6 +24,9 @@ class User(Base):
     addresses = relationship('Address', back_populates='user')
     items = relationship('Item', back_populates='user')
 
+    trades = relationship('Trade', primaryjoin="or_(Trade.user_from_id == User.id, "
+                                      "Trade.user_to_id == User.id)")
+
     @validates('email')
     def validate_email(self, key, address):
         assert '@' in address and address.split('@')[1] != ''
@@ -55,6 +58,10 @@ class User(Base):
         for k,v in kwargs.items():
             if hasattr(self, k):
                 setattr(self, k, v)
+
+    @property
+    def trade_ids(self):
+        return [trade.id for trade in self.trades]
 
 class Address(Base):
     __tablename__ = 'addresses'
