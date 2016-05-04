@@ -132,7 +132,6 @@ class TradeTests(SeleniumTest):
         # she wonders if she can snoop in on some other trade (namely alpha1 and omegas trade)
         # she tries entering in a random number
 
-        time.sleep(5)
         self.go_to("trades/{}".format(the_trade_id))
 
         # she is thwarted by the advanced security machinery

@@ -3,7 +3,7 @@
 """
 
 from flask.ext.script import Manager
-from flask import g, session
+from flask import g, session, request
 
 from app import create_app
 from app.db import db_session, init_db
@@ -21,8 +21,7 @@ def shutdown_session(exception=None):
 @smtrade.before_request
 def before_request():
     g.db = db_session()
-
-    if session.get('current_user_id', None):
+    if session.get('current_user_id', None) and not request.endpoint == 'testing.server_shutdown':
         g.user = g.db.query(User).filter_by(id=int(session.get('current_user_id'))).first()
     else:
         g.user = None

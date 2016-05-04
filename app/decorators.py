@@ -31,7 +31,6 @@ def user_is_logged_in(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if g.user is None:
-            print(request.path)
             flash('Must be logged in to access that')
             return redirect(url_for('auth.login', next=request.path))
         return func(*args, **kwargs)

@@ -28,6 +28,7 @@ class TestingConfig(Config):
     test_uri = 'sqlite:///' + os.path.join(Config.BASE_DIR, db_path)
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
         test_uri
+    SERVER_NAME = 'localhost:5001'
 
 class ProductionConfig(Config): pass
 

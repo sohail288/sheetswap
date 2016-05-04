@@ -60,42 +60,39 @@ def request_trade(requested_item_id):
     return redirect(url_for('main.index'))
 
 @trade_routes.route('/accept/<int:trade_id>', methods=['POST'])
+@user_is_part_of_trade()
 def accept_trade(trade_id):
     trade = Trade.query.filter_by(id=trade_id).one()
 
-    if trade.user_to_id != g.user.id:
-        flash("Are you crazy!", 'error')
-        return redirect("main.dashboard")
 
-    else:
-        session['TRADING'] = True
-        session['trade_id'] = trade_id
-        return redirect(url_for('.trading', from_user_id=trade.user_from_id))
+    session['TRADING'] = True
+    session['trade_id'] = trade_id
+    return redirect(url_for('.trading', from_user_id=trade.user_from_id))
 
 @trade_routes.route('/reject/<int:trade_id>', methods=['POST'])
+@user_is_part_of_trade()
 def reject_trade(trade_id):
     trade = Trade.query.filter_by(id=trade_id).one()
     from_user = User.query.filter_by(id=trade.user_from_id).one()
 
-    if trade.user_to_id != g.user.id:
-        return redirect("Are you crazy!", "error")
-    else:
-        trade.rejected = True
-        trade.trade_fin_timestamp = datetime.now()
-        trade.completed = True
-        g.db.commit()
+    trade.rejected = True
+    trade.trade_fin_timestamp = datetime.now()
+    trade.completed = True
+    g.db.commit()
 
-        flash("Rejected trade from {} for {}".format(from_user.username,
-            trade.item_to.sheetmusic.title), 'error')
-        return redirect(url_for('main.dashboard'))
+    flash("Rejected trade from {} for {}".format(from_user.username,
+        trade.item_to.sheetmusic.title), 'error')
+    return redirect(url_for('main.dashboard'))
 
 @trade_routes.route('/trading', methods=['POST', 'GET'])
 def trading():
 
     if request.method == 'POST':
+        # get the from item id and trade id from the form
         from_item_id, trade_id = [int(tok) for tok in request.form.get('trade_item').split()]
         trade = g.db.query(Trade).filter_by(id=trade_id).one()
         from_item = Item.query.filter_by(id=from_item_id).one()
+
 
         trade.item_from = from_item
         trade.completed = True

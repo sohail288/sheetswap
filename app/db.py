@@ -11,7 +11,6 @@ from config import get_env_config
 
 
 app_settings = get_env_config()
-
 db_uri = app_settings.SQLALCHEMY_DATABASE_URI
 engine = create_engine(db_uri, convert_unicode=True)
 db_session  = scoped_session(sessionmaker(autocommit=False,
@@ -48,7 +47,29 @@ def get_db_metadata(engine=engine):
     return metadata
 
 
+def serialize_all(db_dump_name, tables=None): # this function is not ready
+    from sqlalchemy.ext.serializer import dumps
+    import pickle
+    metadata = get_db_metadata()
 
+    tables = metadata.tables if not tables else tables
+    data_dict = {t: dumps(db_session.query(metadata.tables[t]).all())
+                    for t in metadata.tables if t in tables}
+
+    file_name = os.path.join(app_settings.BASE_DIR, db_dump_name)
+    with open(file_name, 'wb') as fh:
+        pickle.dump(data_dict, fh)
+
+def load_all(db_dump_name, tables=None): # this function is not ready
+    from sqlalchemy.ext.serializer import loads
+    import pickle
+    metadata = get_db_metadata()
+
+    file_name = os.path.join(app_settings.BASE_DIR, db_dump_name)
+    with open(file_name, 'rb') as fh:
+        data_dict = pickle.load(fh)
+        for table_name, data in data_dict.items():
+            loads(data, metadata)
 
 
 
