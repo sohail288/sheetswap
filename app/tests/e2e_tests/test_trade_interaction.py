@@ -1,5 +1,6 @@
 from selenium import webdriver
 from app.tests.test_base import SeleniumTest
+from models import Trade, Sheetmusic
 import time
 
 
@@ -12,6 +13,24 @@ class TradeTests(SeleniumTest):
         self.login('omega@email.com', 'password', self.other_client)
         self.create_item('symphony #5', 'beethoven', other_client=self.other_client)
         self.other_client.quit()
+
+    def alpha1_requests_omegas_item(self):
+        self.other_client = webdriver.Firefox()
+        self.other_client.implicitly_wait(3)
+        self.login('alpha1@email.com', 'password', self.other_client)
+        self.other_client.get("{}/{}".format(self.server_url, 'sheets'))
+        panel = self.other_client.find_element_by_xpath('//div[@class="panel panel-default" and '
+                                                  'contains(.//a, "symphony #5")]')
+        link = panel.find_element_by_tag_name('a')
+        link.click()
+        item = self.other_client.find_element_by_css_selector('.item-stub')
+        item.find_element_by_css_selector('.btn-link').click()
+        self.other_client.quit()
+
+        sheetmusic_id = Sheetmusic.query.filter_by(title='symphony #5').one().id
+        return Trade.query.filter(Trade.item_to.has(sheetmusic_id=sheetmusic_id)).one().id
+
+
 
     def test_typical_trading_session(self):
         # alpha1 and omega are trading, so have omega create an item
@@ -95,3 +114,32 @@ class TradeTests(SeleniumTest):
         self.assertEqual(len(addresses), 2)
 
         # they end up going to the post office to send their respective sheets
+
+
+    def test_unauthorized_user_cannot_access_a_trade(self):
+        # this story is about alpha1, omega, and mary
+        # the code for adding and item, requesting a trade is abstracted out since
+        # it has already been tested above
+
+        # alpha1 and omega are trading
+        self.omega_creates_an_item()
+        the_trade_id = self.alpha1_requests_omegas_item()
+
+        # enter mary, she is being sneaky
+        self.login('mary@email.com', 'password')
+
+        # she notices that trades are being accessed by numbers ie trades/3
+        # she wonders if she can snoop in on some other trade (namely alpha1 and omegas trade)
+        # she tries entering in a random number
+
+        self.go_to("trades/{}".format(the_trade_id))
+
+        # she is thwarted by the advanced security machinery
+        self.assertIn('dashboard', self.client.current_url)
+
+        # an alert gets raised that tells mary she can't do that
+        error = self.client.find_element_by_css_selector('.alert-danger')
+
+        self.assertIn('you are not a part of that trade', error.text.lower())
+
+

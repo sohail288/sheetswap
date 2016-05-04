@@ -18,6 +18,8 @@ from . import main_routes
 from models.sheets import Sheetmusic
 from models import Trade, Item
 
+from app.decorators import user_is_logged_in
+
 
 @main_routes.route('/')
 def index():
@@ -34,6 +36,7 @@ def search_results():
     return redirect(url_for('.index'))
 
 @main_routes.route('/dashboard')
+@user_is_logged_in
 def dashboard():
     trades_for_user = g.db.query(Trade)\
         .filter(Trade.user_to_id == g.user.id)\
@@ -49,9 +52,6 @@ def dashboard():
         .filter(Trade.user_to_id == g.user.id)\
         .filter(Trade.rejected == True)\
         .all()
-    if not session.get('logged_in', False):
-        flash("You must login for that", "error")
-        return redirect(url_for('auth.login'))
 
     return render_template('dashboard/index.html',
                            trades=trades_for_user,

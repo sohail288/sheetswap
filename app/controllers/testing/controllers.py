@@ -2,6 +2,7 @@ from flask import request, abort, current_app
 
 from . import tests
 
+
 @tests.route('/shutdown')
 def server_shutdown():
     if not current_app.testing:
@@ -10,4 +11,4 @@ def server_shutdown():
     if not shutdown:
         abort(500)
     shutdown()
-    return 'Shutting down...'
+    return '<h1>Shutting down server</h1>'

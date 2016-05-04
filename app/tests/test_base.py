@@ -8,21 +8,31 @@ from selenium import webdriver
 from selenium.webdriver.support.select import Select
 from flask import current_app
 
-from app.db import init_db, db_session, get_db_metadata
+from app.db import init_db, db_session, get_db_metadata, load_all, serialize_all
 from config import get_env_config
 from run import get_decorated_app
 from app import create_app
 
+DB_PICKLE_NAME = 'testing.db'
+
 class AppTest(unittest.TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setUpClass(cls):
         os.environ['APP_SETTINGS'] == 'testing' or os.environ.update(APP_SETTINGS='testing')
-        self.config_obj = get_env_config()
-        self.app = create_app()
+        cls.config_obj = get_env_config()
+        cls.meta_db = get_db_metadata()
+        init_db(seed_data=True, rebuild=True)
+        cls.backup_db = os.path.join(cls.config_obj.BASE_DIR, DB_PICKLE_NAME)
+        serialize_all(cls.backup_db)
+
+    def setUp(self):
+        self.app = get_decorated_app()
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.db = db_session()
-        init_db(rebuild=True)
-        self.meta_db = get_db_metadata()
+        init_db()
+        load_all(self.backup_db)
         self.client = self.app.test_client(use_cookies=True)
 
 
@@ -32,6 +42,11 @@ class AppTest(unittest.TestCase):
         self.app_context.pop()
         if 'sqlite' in self.config_obj.SQLALCHEMY_DATABASE_URI:
             os.remove(os.path.join(self.config_obj.BASE_DIR, self.config_obj.db_path))
+
+    @classmethod
+    def tearDownClass(cls):
+        if os.path.exists(cls.backup_db):
+            os.remove(cls.backup_db)
 
 class DBTest(unittest.TestCase):
     def setUp(self):
@@ -66,14 +81,16 @@ class SeleniumTest(unittest.TestCase):
             cls.app_context = cls.app.test_request_context()
             cls.app_context.push()
 
-            # supress logging
+            # suppress logging
             import logging
             logger = logging.getLogger('werkzeug')
             logger.setLevel("ERROR")
 
+            # instead of rebuilding each time, take a snapshot of db and reload that
             cls.db = db_session()
             init_db(seed_data=True, rebuild=True)
             cls.meta_db = get_db_metadata()
+            serialize_all(DB_PICKLE_NAME, cls.meta_db)
 
             # the server url
             cls.host = 'localhost'
@@ -93,8 +110,35 @@ class SeleniumTest(unittest.TestCase):
             cls.meta_db.drop_all()
             if 'sqlite' in cls.config_obj.SQLALCHEMY_DATABASE_URI:
                 os.remove(os.path.join(cls.config_obj.BASE_DIR, cls.config_obj.db_path))
+
             cls.app_context.pop()
 
+            # remove the db image file if it is present
+            backup_db = os.path.join(cls.config_obj.BASE_DIR, DB_PICKLE_NAME)
+            if os.path.exists(backup_db):
+                os.remove(backup_db)
+
+    def setUp(self):
+        if not self.client:
+            self.skipTest("Client not initialized")
+        else:
+            self.client.implicitly_wait(3)
+            init_db()
+            load_all(DB_PICKLE_NAME, self.meta_db)
+
+    def tearDown(self):
+        """
+        Tests if another client is defined.  If it is, destroy it
+        :return: None
+        """
+        if hasattr(self, 'other_client'):
+            try:
+                self.other_client.close()
+            except ConnectionRefusedError:
+                pass
+
+        db_session.remove()
+        self.meta_db.drop_all()
 
     def go_to(self, address, other_client=None):
         client = other_client if other_client else self.client
@@ -123,17 +167,3 @@ class SeleniumTest(unittest.TestCase):
         dd = Select(client.find_element_by_id('condition'))
         dd.select_by_visible_text(condition)
         client.find_element_by_xpath('//button[@type="submit"]').click()
-
-    def setUp(self):
-        if not self.client:
-            self.skipTest("Client not initialized")
-        else:
-            self.client.implicitly_wait(3)
-
-    def tearDown(self):
-        """
-        Tests if another client is defined.  If it is, destroy it
-        :return: None
-        """
-        if hasattr(self, 'other_client'):
-            self.other_client.close()

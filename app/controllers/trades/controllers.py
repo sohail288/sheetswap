@@ -14,7 +14,16 @@ from models import Trade, Item, User
 
 from . import trade_routes
 
+from app.decorators import user_is_part_of_trade, user_is_logged_in
+
+
+@trade_routes.before_request
+@user_is_logged_in
+def before_request():
+    pass
+
 @trade_routes.route('/<int:trade_id>')
+@user_is_part_of_trade()
 def main(trade_id):
     """ this is the main controller for a trade.  It is the basis of a trade where two users can see what's going on
     :param trade_id: This is the id of the trade
@@ -22,16 +31,12 @@ def main(trade_id):
     """
     trade = Trade.query.filter_by(id=trade_id).one_or_none()
 
-    if not (g.user.id == trade.user_from_id or g.user.id == trade.user_to_id):
-        flash('You are not a part of that trade')
-        return redirect('main.dashboard')
-
     if not trade:
-        flash("That trade doesn't exist or you are not a part of it")
+        flash("That trade doesn't exist", 'error')
         return redirect('main.dashboard')
 
-    user_from = User.query.filter_by(id=trade.user_from_id).one()
-    user_to   = User.query.filter_by(id=trade.user_to_id).one()
+    user_from = trade.user_from
+    user_to   = trade.user_to
 
     return render_template('trades/main.html', trade=trade,
                            user_from=user_from,
@@ -55,42 +60,39 @@ def request_trade(requested_item_id):
     return redirect(url_for('main.index'))
 
 @trade_routes.route('/accept/<int:trade_id>', methods=['POST'])
+@user_is_part_of_trade()
 def accept_trade(trade_id):
     trade = Trade.query.filter_by(id=trade_id).one()
 
-    if trade.user_to_id != g.user.id:
-        flash("Are you crazy!", 'error')
-        return redirect("main.dashboard")
 
-    else:
-        session['TRADING'] = True
-        session['trade_id'] = trade_id
-        return redirect(url_for('.trading', from_user_id=trade.user_from_id))
+    session['TRADING'] = True
+    session['trade_id'] = trade_id
+    return redirect(url_for('.trading', from_user_id=trade.user_from_id))
 
 @trade_routes.route('/reject/<int:trade_id>', methods=['POST'])
+@user_is_part_of_trade()
 def reject_trade(trade_id):
     trade = Trade.query.filter_by(id=trade_id).one()
     from_user = User.query.filter_by(id=trade.user_from_id).one()
 
-    if trade.user_to_id != g.user.id:
-        return redirect("Are you crazy!", "error")
-    else:
-        trade.rejected = True
-        trade.trade_fin_timestamp = datetime.now()
-        trade.completed = True
-        g.db.commit()
+    trade.rejected = True
+    trade.trade_fin_timestamp = datetime.now()
+    trade.completed = True
+    g.db.commit()
 
-        flash("Rejected trade from {} for {}".format(from_user.username,
-            trade.item_to.sheetmusic.title))
-        return redirect(url_for('main.dashboard'))
+    flash("Rejected trade from {} for {}".format(from_user.username,
+        trade.item_to.sheetmusic.title), 'error')
+    return redirect(url_for('main.dashboard'))
 
 @trade_routes.route('/trading', methods=['POST', 'GET'])
 def trading():
 
     if request.method == 'POST':
+        # get the from item id and trade id from the form
         from_item_id, trade_id = [int(tok) for tok in request.form.get('trade_item').split()]
         trade = g.db.query(Trade).filter_by(id=trade_id).one()
         from_item = Item.query.filter_by(id=from_item_id).one()
+
 
         trade.item_from = from_item
         trade.completed = True
