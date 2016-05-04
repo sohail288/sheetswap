@@ -23,30 +23,31 @@ class AppTest(unittest.TestCase):
         cls.config_obj = get_env_config()
         cls.meta_db = get_db_metadata()
         init_db(seed_data=True, rebuild=True)
-        cls.backup_db = os.path.join(cls.config_obj.BASE_DIR, DB_PICKLE_NAME)
-        serialize_all(cls.backup_db)
+#        cls.backup_db = os.path.join(cls.config_obj.BASE_DIR, DB_PICKLE_NAME)
+#        serialize_all(cls.backup_db)
 
     def setUp(self):
         self.app = get_decorated_app()
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.db = db_session()
-        init_db()
-        load_all(self.backup_db)
+        #init_db()
+        #load_all(self.backup_db)
         self.client = self.app.test_client(use_cookies=True)
 
 
     def tearDown(self):
         db_session.remove()
-        self.meta_db.drop_all()
+#        self.meta_db.drop_all()
         self.app_context.pop()
         if 'sqlite' in self.config_obj.SQLALCHEMY_DATABASE_URI:
             os.remove(os.path.join(self.config_obj.BASE_DIR, self.config_obj.db_path))
 
     @classmethod
     def tearDownClass(cls):
-        if os.path.exists(cls.backup_db):
-            os.remove(cls.backup_db)
+#        if os.path.exists(cls.backup_db):
+#            os.remove(cls.backup_db)
+        cls.meta_db.drop_all()
 
 class DBTest(unittest.TestCase):
     def setUp(self):
