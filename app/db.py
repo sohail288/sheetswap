@@ -69,7 +69,10 @@ def load_all(db_dump_name, tables=None): # this function is not ready
     with open(file_name, 'rb') as fh:
         data_dict = pickle.load(fh)
         for table_name, data in data_dict.items():
-            loads(data, metadata)
+            for row in loads(data, metadata, db_session):
+                print(row)
+                db_session.merge(row)
+                db_session.commit()
 
 
 
