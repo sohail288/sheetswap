@@ -26,6 +26,7 @@ def main():
 @user_is_logged_in
 def create():
     form = CreateItemForm(request.form)
+    print(form.validate(), request.method, request.form)
     if request.method == 'POST' and form.validate():
         sheetmusic_id = form.sheetmusic_id.data
         sheetmusic = Sheetmusic.query.filter_by(id=sheetmusic_id).one()
@@ -47,7 +48,14 @@ def create():
 
 @items_routes.route('/<int:item_id>')
 def index(item_id):
-    return render_template('items/view_item.html', item_id=item_id)
+    item = Item.query.filter_by(id=item_id).one_or_none()
+    if item is None:
+        flash('That item does not exist!')
+        if g.user is None:
+            return redirect(url_for('main.index'))
+        else:
+            return redirect(url_for('main.dashboard'))
+    return render_template('items/view_item.html', item=item)
 
 
 @items_routes.route('/<int:item_id>/update', methods=['POST', 'GET'])
@@ -57,7 +65,7 @@ def update(item_id):
     if request.method == 'POST':
         posting = 'posting'
         flash('item updated', 'success')
-        redirect(url_for('.index', item_id=item_id))
+        return redirect(url_for('.index', item_id=item_id))
 
     return render_template('items/update_item.html', posting=posting, item_id=item_id)
 
