@@ -11,3 +11,5 @@ class AuthenticationTests(SeleniumTest):
         e = self.client.find_element_by_css_selector('.alert')
 
         self.assertIn('Welcome', e.text)
+        self.assertIn('dashboard', self.client.title.lower())
+

@@ -1,0 +1,16 @@
+{% import 'util.html' as util %}
+<div class="col-xs-12 col-sm-6 col-md-4 item-stub">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a href="{{ url_for('items.index', item_id=item.id) }}" > {{ item.sheetmusic.title }}</a>
+            {{  util.form_button(url_for('items.update', item_id=item.id),
+                                 util.icon('pencil'),
+                                 method='GET',
+                                 class='btn-link pull-right')}}
+        </div>
+
+        <div class="panel-body">
+            <p> {{ item.added_on.strftime('%m/%d/%Y') | time_ago }}</p>
+        </div>
+    </div>
+</div>

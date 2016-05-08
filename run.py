@@ -8,7 +8,7 @@ from flask import g, session, request
 from app import create_app
 from app.db import db_session, init_db
 from models.auth import User
-from util.jinja_filters.jinja_filters import pluralize
+from util.jinja_filters.jinja_filters import pluralize, time_ago
 
 
 smtrade = create_app()
@@ -38,6 +38,8 @@ def inject_user():
 @smtrade.context_processor
 def inject_pluralize():
     return dict(pluralize=pluralize)
+
+smtrade.jinja_env.filters['time_ago'] = time_ago
 
 def get_decorated_app():
     return smtrade

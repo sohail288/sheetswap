@@ -4,7 +4,8 @@ from wtforms import (Form,
                      validators,
                      HiddenField,
                      FileField,
-                     SelectField
+                     SelectField,
+                     BooleanField,
                      )
 
 from models.common.forms.forms import HiddenInteger
@@ -21,5 +22,11 @@ condition_choices = [
 class CreateItemForm(Form):
     sheetmusic_id = HiddenInteger("sheetmusic_id")
     description = TextAreaField()
+    condition = SelectField('Condition', choices=condition_choices)
+    images = FileField('Sheetmusic Images', render_kw={'multiple':True})
+
+class EditItemForm(Form):
+    description = TextAreaField()
     images = FileField('Sheetmusic Images', render_kw={'multiple':True})
     condition = SelectField('Condition', choices=condition_choices)
+    available = BooleanField('Available?')

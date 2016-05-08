@@ -1,5 +1,6 @@
 from selenium.webdriver.support.select import Select
 from app.tests.test_base import SeleniumTest
+import time
 
 class ItemTests(SeleniumTest):
 
@@ -32,11 +33,11 @@ class ItemTests(SeleniumTest):
         checkbox.click()
 
         # she messed up on the condition of the item so she changes that
-        condition = Select(self.client.find_element_by_id('#condition'))
+        condition = Select(self.client.find_element_by_id('condition'))
         condition.select_by_visible_text('Torn pages, but all there')
 
-        # and shes down
-        self.find_element_by_xpath('//button[type="submit"]').click()
+        # and shes done
+        self.client.find_element_by_xpath('//button[@type="submit"]').click()
 
 
         # she gets taken to the item page which lists the current details
@@ -49,6 +50,26 @@ class ItemTests(SeleniumTest):
         not_available_message = self.client.find_element_by_css_selector('.item-not-available')
         self.assertEqual('symphony #5', heading.text)
         self.assertEqual('beethoven', composer.text)
-        self.assertEqual('Clean', condition.text)
+        self.assertEqual('Torn pages, but all there', condition.text)
         self.assertIn('this item is hidden from other users', not_available_message.text)
 
+    def test_omega_can_access_her_items_from_her_dashboard(self):
+        # omega signs in
+        self.login('omega@email.com', 'password')
+
+        # and there she sees her items
+        self.client.find_element_by_css_selector('.items')
+        items = self.client.find_elements_by_css_selector('.item-stub')
+
+        # she can also edit them if she wants to
+        edit_forms = self.client.find_elements_by_xpath('//div[@class="row items"]//form')
+
+        self.assertEqual(len(items), len(edit_forms))
+
+        # finally she can go directly to a page
+        links = self.client.find_elements_by_css_selector('.item-stub  a')
+        self.assertEqual(len(items), len(links))
+
+        links[0].click()
+
+        self.assertIn('items', self.client.current_url)

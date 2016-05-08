@@ -22,21 +22,27 @@ class ItemControllerUnitTests(TestCase):
                                                  Form,
                                                  Item,
                                                  redirect,
+                                                 url_for,
                                                  g,
                                                  render_template,
                                                  request,
-                                                 url_for,
                                                  flash):
         Form.return_value=Form()
-        Sheetmusic.query.filter_by().one = mock.MagicMock(return_value=Sheetmusic())
+        Item.return_value=Item(id=2)
+        Sheetmusic.query.filter_by().one = mock.MagicMock(return_value=Sheetmusic(id=1))
         decG.user = 'user'
-        request.method= mock.PropertyMock(return_value='POST')
-        form = Form(request.form)
+        type(request).method = mock.PropertyMock(return_value='POST')
+        type(request).form = mock.PropertyMock(return_value='Form')
+        form = Form()
         form.validate = mock.MagicMock(return_value=True)
+        item = Item()
+        type(item).id = mock.PropertyMock(return_value=2)
+        print(item.id)
 
         create()
         flash.assert_called_with('You just made a new item!', 'success')
-        redirect.assert_called_with('items.index', item_id=2)
+        url_for.assert_called_with('items.index', item_id=item.id)
+        redirect.assert_called_with(url_for('items.index', item_id=item.id))
 
 
     @mock.patch('app.controllers.items.controllers.Item')
@@ -77,13 +83,18 @@ class ItemControllerUnitTests(TestCase):
 
 class ItemControllerContextTests(AppTest):
 
-    def test_get_request_for_an_available_sheetmusic_gives_item_page(self):
+    def test_get_request_for_an_available_gives_item_page(self):
         item_to_be_examined = Item.query.filter_by(id=1).one()
         response = self.client.get(url_for('items.index', item_id=1))
         self.assertEqual(response.status_code, 200, 'Make sure the database is seeded')
 
         self.assertIn(item_to_be_examined.sheetmusic.title, response.get_data(as_text=True))
 
+    def test_post_request__on_create_redirects_to_item_page(self):
+        self.fail('needs a test')
+
+    def test_post_request__on_remove__redirects_to_dashboard_with_flash(self):
+        self.fail('needs a test')
 
 
 

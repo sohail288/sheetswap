@@ -15,6 +15,16 @@ from app.db import Base
 #from models.sheets import Sheetmusic
 from models.trades import Trade
 
+condition_map = dict([
+    ('new', 'New'),
+    ('clean', 'Clean'),
+    ('okay', 'Not too bad'),
+    ('marked', 'Has markings'),
+    ('missing','Is missing pages'),
+    ('torn', 'Torn pages, but all there'),
+    ('old', 'Oldish')
+])
+
 class Item(Base):
 
     """
@@ -37,6 +47,7 @@ class Item(Base):
     description = Column(Unicode(256))
     condition = Column(Unicode(32))
 
+    # this relation gives you all the trades this item is a participant of
     trades = relationship('Trade',
                           primaryjoin="or_(Trade.item_from_id == Item.id, "
                                       "Trade.item_to_id == Item.id)")
@@ -58,6 +69,12 @@ class Item(Base):
                                                                   self.sheetmusic.title,
                                                                   self.user.username,
                                                                   self.condition)
+
+    @property
+    def condition_text(self):
+        return condition_map[self.condition]
+
+
 
 
 class ItemImage(Base):

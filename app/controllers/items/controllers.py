@@ -11,7 +11,7 @@ from flask import (g,
 
 from . import items_routes
 from models import Item, Sheetmusic
-from models.items.forms import CreateItemForm
+from models.items.forms import CreateItemForm, EditItemForm
 from models.sheets.forms import SheetMusicForm
 
 from app.decorators import user_is_logged_in
@@ -26,7 +26,6 @@ def main():
 @user_is_logged_in
 def create():
     form = CreateItemForm(request.form)
-    print(form.validate(), request.method, request.form)
     if request.method == 'POST' and form.validate():
         sheetmusic_id = form.sheetmusic_id.data
         sheetmusic = Sheetmusic.query.filter_by(id=sheetmusic_id).one()
@@ -38,8 +37,8 @@ def create():
         g.db.add(new_item)
         g.db.commit()
 
-        flash("Your item is new item!", "success")
-        return redirect(url_for('main.dashboard'))
+        flash("You just made a new item!", "success")
+        return redirect(url_for('items.index', item_id=new_item.id))
 
     sheetmusic_id = int(request.args.get('sheetmusic_id', 0))
     if sheetmusic_id:
@@ -61,13 +60,14 @@ def index(item_id):
 @items_routes.route('/<int:item_id>/update', methods=['POST', 'GET'])
 @user_is_logged_in
 def update(item_id):
-    posting = 'not posting'
-    if request.method == 'POST':
-        posting = 'posting'
+    item = Item.query.filter_by(id=item_id).one_or_none()
+    form = EditItemForm(request.form, item)
+    if request.method == 'POST' and form.validate():
+        form.populate_obj(item)
+        g.db.commit()
         flash('item updated', 'success')
         return redirect(url_for('.index', item_id=item_id))
-
-    return render_template('items/update_item.html', posting=posting, item_id=item_id)
+    return render_template('items/update_item.html', form=form, item_id=item_id)
 
 @items_routes.route('/<int:item_id>/remove', methods=['POST', 'GET'])
 @user_is_logged_in
