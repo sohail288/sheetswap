@@ -69,7 +69,17 @@ def update(item_id):
         return redirect(url_for('.index', item_id=item_id))
     return render_template('items/update_item.html', form=form, item_id=item_id)
 
-@items_routes.route('/<int:item_id>/remove', methods=['POST', 'GET'])
+@items_routes.route('/<int:item_id>/remove', methods=['POST'])
 @user_is_logged_in
 def remove(item_id):
-    return render_template('items/remove_item.html')
+    item = Item.query.filter_by(id=item_id).one_or_none()
+
+    if g.user.id == item.user.id \
+            and request.method == 'POST'\
+            and not item.trades:
+        g.db.delete(item)
+        g.db.commit()
+        flash('item removed', 'success')
+        return redirect(url_for('main.dashboard'))
+    flash('Cannot do that', 'error')
+    return redirect(url_for('main.dashboard'))

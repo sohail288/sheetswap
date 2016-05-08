@@ -73,3 +73,7 @@ class ItemTests(SeleniumTest):
         links[0].click()
 
         self.assertIn('items', self.client.current_url)
+
+    def test_omega_can_delete_her_items_from_her_dashboard(self):
+        # omega signs in
+        self.fail('write this test')
