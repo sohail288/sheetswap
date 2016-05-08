@@ -113,7 +113,7 @@ class TradeTests(SeleniumTest):
         addresses = self.other_client.find_elements_by_css_selector('.address')
         self.assertEqual(len(addresses), 2)
 
-        # they end up going to the post office to send their respective sheets
+
 
 
     def test_unauthorized_user_cannot_access_a_trade(self):

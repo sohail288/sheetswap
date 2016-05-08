@@ -63,6 +63,10 @@ class User(Base):
     def trade_ids(self):
         return [trade.id for trade in self.trades]
 
+    def get_available_items(self):
+        return [item for item in self.items
+                if not any([trade.completed and not trade.rejected for trade in item.trades])]
+
 class Address(Base):
     __tablename__ = 'addresses'
 

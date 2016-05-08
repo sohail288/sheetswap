@@ -38,7 +38,7 @@
 
     {% if current_user.items %}
         <h2>My Items</h2>
-        {% with items=current_user.items %}
+        {% with items=current_user.get_available_items() %}
             {% include 'items/dashboard_item_list.html' %}
         {% endwith %}
     {% else %}
