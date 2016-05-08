@@ -89,9 +89,10 @@ class SeleniumTest(unittest.TestCase):
 
             # instead of rebuilding each time, take a snapshot of db and reload that
             cls.db = db_session()
-            init_db(seed_data=True, rebuild=True)
             cls.meta_db = get_db_metadata()
-            serialize_all(DB_PICKLE_NAME, cls.meta_db)
+
+            # need to find a way to make this work
+            # serialize_all(DB_PICKLE_NAME, cls.meta_db)
 
             # the server url
             cls.host = 'localhost'
@@ -115,17 +116,17 @@ class SeleniumTest(unittest.TestCase):
             cls.app_context.pop()
 
             # remove the db image file if it is present
-            backup_db = os.path.join(cls.config_obj.BASE_DIR, DB_PICKLE_NAME)
-            if os.path.exists(backup_db):
-                os.remove(backup_db)
+            # backup_db = os.path.join(cls.config_obj.BASE_DIR, DB_PICKLE_NAME)
+            # if os.path.exists(backup_db):
+            #    os.remove(backup_db)
 
     def setUp(self):
         if not self.client:
             self.skipTest("Client not initialized")
         else:
             self.client.implicitly_wait(3)
-            init_db()
-            load_all(DB_PICKLE_NAME, self.meta_db)
+            init_db(rebuild=True, seed_data=True)
+            # load_all(DB_PICKLE_NAME, self.meta_db)
 
     def tearDown(self):
         """
@@ -138,6 +139,7 @@ class SeleniumTest(unittest.TestCase):
             except ConnectionRefusedError:
                 pass
 
+        self.go_to('auth/logout')
         db_session.remove()
         self.meta_db.drop_all()
 
@@ -158,6 +160,7 @@ class SeleniumTest(unittest.TestCase):
         client.find_element_by_id('email').send_keys(email)
         client.find_element_by_id('password').send_keys(password)
         client.find_element_by_xpath('//*[@type="submit"]').click()
+
 
     def create_item(self, title, composer, condition='Clean', other_client=None):
         client = other_client if other_client else self.client

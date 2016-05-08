@@ -1,5 +1,5 @@
-{%  macro create_form(form, controller, method='POST') -%}
-    <form action="{{ url_for(controller) }}" method="{{ method }}">
+{%  macro create_form(form, controller, method='POST', url_params={}) -%}
+    <form action="{{ url_for(controller, **url_params) }}" method="{{ method }}">
         {% for field in form %}
             {# if the form has any errors set the following variables #}
             {% if field.errors %}

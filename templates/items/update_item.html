@@ -1,6 +1,9 @@
+{% import 'form_macros.html' as forms %}
 {% extends 'base.html' %}
+
+{% block sub_title %}Update {% endblock sub_title %}
 
 {% block page_content %}
     <h1>Update Item</h1>
-    {{ posting }}
+    {{ forms.create_form(form, "items.update", url_params={"item_id": item_id}) }}
 {% endblock page_content %}

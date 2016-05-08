@@ -12,28 +12,37 @@
     <h1>This is your dashboard, {{ current_user.username }}</h1>
 
     {% if trades %}
-    <h1>Trades Pending</h1>
+    <h2>Trades Pending</h2>
         {% include 'trades/trade_list.html' %}
         {% else %}
-        <h1>No trades pending</h1>
+        <h2>No trades pending</h2>
     {% endif %}
 
     {% if completed_trades %}
-    <h1> Trades Completed</h1>
+    <h2> Trades Completed</h2>
         {% with trades=completed_trades %}
         {% include 'trades/trade_list.html' %}
         {% endwith %}
     {% else %}
-        <h1>No completed Trades</h1>
+        <h2>No completed Trades</h2>
     {% endif %}
 
     {% if rejected_trades %}
-    <h1>Trades Rejected</h1>
+    <h2>Trades Rejected</h2>
         {% with trades=rejected_trades %}
         {% include 'trades/trade_list.html' %}
         {% endwith %}
     {% else %}
-        <h1> No rejected trades</h1>
+        <h2> No rejected trades</h2>
+    {% endif %}
+
+    {% if current_user.items %}
+        <h2>My Items</h2>
+        {% with items=current_user.items %}
+            {% include 'items/dashboard_item_list.html' %}
+        {% endwith %}
+    {% else %}
+        <h2>Add some items!</h2>
     {% endif %}
 
 {% endblock page_content %}

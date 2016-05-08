@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 
+{% set sheetmusic=item.sheetmusic %}
+
 {% block page_content %}
-    <h1> Item {{ item_id }}</h1>
+    <h1> {{ sheetmusic.title }}</h1>
+
+    {% if g.user and item.user == g.user %}
+    <a id="edit-item" href="{{ url_for('.update', item_id=item.id) }}">Edit item</a>
+    {% endif %}
+
+    {% if not item.available %}
+        <p class="item-not-available">this item is hidden from other users</p>
+    {% endif %}
+
+    <p id="title">{{ sheetmusic.title }}</p>
+    <p id="composer">{{ sheetmusic.composer }}</p>
+    <p id="condition">{{ item.condition_text }}</p>
+    <p id="description">{{ item.description }} </p>
+
 
 {% endblock page_content %}

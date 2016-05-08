@@ -7,8 +7,6 @@ from werkzeug.exceptions import abort, BadRequest
 from functools import wraps
 from flask import g, request, redirect, url_for, flash
 
-#def login_required()
-""" this decorator makes sure that a user is logged in """
 
 #def owns_item()
 """ This decorator makes sure that the item belongs to the user """
@@ -36,3 +34,4 @@ def user_is_logged_in(func):
         return func(*args, **kwargs)
 
     return wrapper
+

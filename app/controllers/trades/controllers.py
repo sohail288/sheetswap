@@ -62,6 +62,11 @@ def request_trade(requested_item_id):
 @trade_routes.route('/accept/<int:trade_id>', methods=['POST'])
 @user_is_part_of_trade()
 def accept_trade(trade_id):
+    """
+    :param trade_id: the id for the trade
+    :return: redirect object.
+    If trade is accepted, a trading session is initialized
+    """
     trade = Trade.query.filter_by(id=trade_id).one()
 
 
@@ -81,7 +86,7 @@ def reject_trade(trade_id):
     g.db.commit()
 
     flash("Rejected trade from {} for {}".format(from_user.username,
-        trade.item_to.sheetmusic.title), 'error')
+        trade.item_to.sheetmusic.title), 'success')
     return redirect(url_for('main.dashboard'))
 
 @trade_routes.route('/trading', methods=['POST', 'GET'])

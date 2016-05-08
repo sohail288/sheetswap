@@ -11,7 +11,7 @@ from flask import (g,
 
 from . import items_routes
 from models import Item, Sheetmusic
-from models.items.forms import CreateItemForm
+from models.items.forms import CreateItemForm, EditItemForm
 from models.sheets.forms import SheetMusicForm
 
 from app.decorators import user_is_logged_in
@@ -37,8 +37,8 @@ def create():
         g.db.add(new_item)
         g.db.commit()
 
-        flash("Your item is new item!", "success")
-        return redirect(url_for('main.dashboard'))
+        flash("You just made a new item!", "success")
+        return redirect(url_for('items.index', item_id=new_item.id))
 
     sheetmusic_id = int(request.args.get('sheetmusic_id', 0))
     if sheetmusic_id:
@@ -47,21 +47,39 @@ def create():
 
 @items_routes.route('/<int:item_id>')
 def index(item_id):
-    return render_template('items/view_item.html', item_id=item_id)
+    item = Item.query.filter_by(id=item_id).one_or_none()
+    if item is None:
+        flash('That item does not exist!')
+        if g.user is None:
+            return redirect(url_for('main.index'))
+        else:
+            return redirect(url_for('main.dashboard'))
+    return render_template('items/view_item.html', item=item)
 
 
 @items_routes.route('/<int:item_id>/update', methods=['POST', 'GET'])
 @user_is_logged_in
 def update(item_id):
-    posting = 'not posting'
-    if request.method == 'POST':
-        posting = 'posting'
+    item = Item.query.filter_by(id=item_id).one_or_none()
+    form = EditItemForm(request.form, item)
+    if request.method == 'POST' and form.validate():
+        form.populate_obj(item)
+        g.db.commit()
         flash('item updated', 'success')
-        redirect(url_for('.index', item_id=item_id))
+        return redirect(url_for('.index', item_id=item_id))
+    return render_template('items/update_item.html', form=form, item_id=item_id)
 
-    return render_template('items/update_item.html', posting=posting, item_id=item_id)
-
-@items_routes.route('/<int:item_id>/remove', methods=['POST', 'GET'])
+@items_routes.route('/<int:item_id>/remove', methods=['POST'])
 @user_is_logged_in
 def remove(item_id):
-    return render_template('items/remove_item.html')
+    item = Item.query.filter_by(id=item_id).one_or_none()
+
+    if g.user.id == item.user.id \
+            and request.method == 'POST'\
+            and not item.trades:
+        g.db.delete(item)
+        g.db.commit()
+        flash('item removed', 'success')
+        return redirect(url_for('main.dashboard'))
+    flash('Cannot do that', 'error')
+    return redirect(url_for('main.dashboard'))

@@ -43,7 +43,7 @@ def login():
             session['logged_in'] = True
             session['current_user_id'] = user.id
             flash('Welcome back {}!'.format(user.username), 'success')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.dashboard'))
         else:
             flash('That password and user combination may be wrong', 'error')
 
