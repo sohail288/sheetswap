@@ -13,7 +13,17 @@ class RegistrationForm(Form):
     check_password = PasswordField('Retype Password', [validators.InputRequired()])
 
 
-
 class LoginForm(Form):
     email = StringField('Email', [validators.Regexp(EMAIL_RE, flags=re.IGNORECASE)])
     password = PasswordField('Password', [validators.InputRequired()])
+
+
+class AddressForm(Form):
+    street_address = StringField('Street Address', id='street-address')
+    city = StringField('City')
+    state = StringField('State/Province')
+    postal_code = StringField('Postal Code',
+                              [validators.Regexp('[0-9-]', message='Numbers and hyphens only')],
+                              id='postal-code')
+    country = StringField('Country')
+
