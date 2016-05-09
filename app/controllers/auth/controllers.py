@@ -8,8 +8,9 @@ from flask import (request,
 
 from sqlalchemy.orm.exc import NoResultFound
 
-from models.auth.forms import RegistrationForm, LoginForm
+from models.auth.forms import RegistrationForm, LoginForm, AddressForm
 from models.auth import User, Address
+from app.decorators import user_is_logged_in
 
 from . import auth_routes
 
@@ -68,4 +69,39 @@ def register():
 
 
 
+@auth_routes.route('/addresses')
+@user_is_logged_in
+def list_addresses():
+    addresses = g.user.addresses
+    return render_template('auth/address_list.html', addresses=addresses)
 
+@auth_routes.route('/addresses/<int:address_id>/edit', methods=['POST', 'GET'])
+@user_is_logged_in
+def edit_address(address_id):
+    address = Address.query.filter_by(id=address_id).one_or_none()
+    form = AddressForm(request.form, address)
+
+    if request.method == 'POST' and form.validate():
+        form.populate_obj(address)
+        g.db.commit()
+        flash('Success!', 'success')
+        return redirect(url_for('auth.list_addresses'))
+
+    return render_template('auth/edit_address.html', form=form, address_id=address_id)
+
+
+@auth_routes.route('/addresses/create', methods=['POST', 'GET'])
+@user_is_logged_in
+def add_address():
+    form = AddressForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        address = Address()
+        form.populate_obj(address)
+        address.user = g.user
+        g.db.add(address)
+        g.db.commit()
+        flash('Added new address')
+        return redirect(url_for('auth.list_addresses'))
+
+    return render_template('auth/add_address.html', form=form)

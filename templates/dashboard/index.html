@@ -11,6 +11,8 @@
 {% block page_content %}
     <h1>This is your dashboard, {{ current_user.username }}</h1>
 
+    <a href="{{ url_for('auth.list_addresses') }}">Edit Mailing Address</a>
+
     {% if trades %}
     <h2>Trades Pending</h2>
         {% include 'trades/trade_list.html' %}

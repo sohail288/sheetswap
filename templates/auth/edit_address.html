@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% import 'form_macros.html' as forms %}
+
+{% block page_content %}
+    {{ forms.create_form(form, 'auth.edit_address', url_params={'address_id':address_id}) }}
+{% endblock page_content %}

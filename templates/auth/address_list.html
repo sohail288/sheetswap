@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% import 'util.html' as util %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='assets/css/auth/styles.css') }}"
+          rel="stylesheet">
+{% endblock styles %}
+
+{% block page_content %}
+    {% if addresses %}
+        <ul class="list-unstyled">
+        {% for address in addresses %}
+            <li class="col-xs-12 col-sm-6 col-md-4 address">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a href="{{ url_for('auth.edit_address', address_id=address.id) }}" class="pull-right">
+                            {{ util.icon('pencil') }}
+                        </a>
+                    </div>
+
+                    <div class="panel-body">
+                        <p>{{ address.street_address }}</p>
+                        <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+                        <p>{{ address.country }}</p>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <h2>No addresses found! Add one here
+            <a href="{{ url_for('auth.add_address') }}">
+                {{ util.icon('plus') }}
+            </a>
+        </h2>
+    {% endif %}
+{% endblock %}

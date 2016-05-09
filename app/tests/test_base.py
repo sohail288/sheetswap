@@ -171,3 +171,17 @@ class SeleniumTest(unittest.TestCase):
         dd = Select(client.find_element_by_id('condition'))
         dd.select_by_visible_text(condition)
         client.find_element_by_xpath('//button[@type="submit"]').click()
+
+
+    def register(self, e, n, p):
+        self.go_to('auth/register')
+        email = self.client.find_element_by_id('email')
+        username = self.client.find_element_by_id('username')
+        password = self.client.find_element_by_id('password')
+        check_password = self.client.find_element_by_id('check_password')
+        email.send_keys(e)
+        username.send_keys(n)
+        password.send_keys(p)
+        check_password.send_keys(p)
+        submit = self.client.find_element_by_xpath('//button[@type="submit"]')
+        submit.click()
