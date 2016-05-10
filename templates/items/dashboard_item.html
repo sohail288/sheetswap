@@ -2,15 +2,15 @@
 <div class="col-xs-12 col-sm-6 col-md-4 item-stub">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <a href="{{ url_for('items.index', item_id=item.id) }}" > {{ item.sheetmusic.title }}</a>
-            {{  util.form_button(url_for('items.update', item_id=item.id),
-                                 util.icon('pencil'),
-                                 method='GET',
-                                 class='btn-link pull-right')}}
+            <a  href="{{ url_for('items.index', item_id=item.id) }}" > {{ item.sheetmusic.title }}</a>
 
             {{ util.form_button(url_for('items.remove', item_id=item.id),
                                 util.icon('remove-sign'),
                                 class='btn-link pull-right')}}
+            <a class='pull-right' href="{{ url_for('items.update', item_id=item.id) }}">
+                {{  util.icon('pencil') }}
+            </a>
+
         </div>
 
         <div class="panel-body">

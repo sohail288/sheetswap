@@ -1,5 +1,7 @@
-{%  macro create_form(form, controller, method='POST', url_params={}) -%}
-    <form action="{{ url_for(controller, **url_params) }}" method="{{ method }}">
+{%  macro create_form(form, controller, method='POST', url_params={}, enctype="") -%}
+    <form action="{{ url_for(controller, **url_params) }}"
+          method="{{ method }}"
+          {% if enctype != "" %} enctype="{{ enctype }}" {% endif %}>
         {% for field in form %}
             {# if the form has any errors set the following variables #}
             {% if field.errors %}

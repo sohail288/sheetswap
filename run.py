@@ -44,7 +44,5 @@ smtrade.jinja_env.filters['time_ago'] = time_ago
 def get_decorated_app():
     return smtrade
 
-
-
 if __name__ == "__main__":
     manager.run()

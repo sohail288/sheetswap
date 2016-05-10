@@ -5,5 +5,5 @@
 
 {% block page_content %}
     <h1>Update Item</h1>
-    {{ forms.create_form(form, "items.update", url_params={"item_id": item_id}) }}
+    {{ forms.create_form(form, "items.update", url_params={"item_id": item_id}, enctype="multipart/form-data") }}
 {% endblock page_content %}

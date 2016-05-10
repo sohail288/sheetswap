@@ -18,5 +18,15 @@
     <p id="condition">{{ item.condition_text }}</p>
     <p id="description">{{ item.description }} </p>
 
+    <div class="row images">
+        {% for image in item.images %}
+            <div class="col-sm-12 col-md-4">
+                <a href="{{ url_for('items.get_image', filename=image) }}">
+                    <img class="thumbnail" src="{{ url_for('items.get_thumbnail', filename=image) }}">
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
 
 {% endblock page_content %}

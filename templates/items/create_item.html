@@ -3,5 +3,5 @@
 
 {% block page_content %}
     <h1> Create Item</h1>
-    {{ forms.create_form(form, 'items.create') }}
+    {{ forms.create_form(form, 'items.create', enctype='multipart/form-data') }}
 {% endblock  page_content %}
