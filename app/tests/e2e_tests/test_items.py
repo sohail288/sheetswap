@@ -36,6 +36,7 @@ class ItemTests(SeleniumTest):
         condition = Select(self.client.find_element_by_id('condition'))
         condition.select_by_visible_text('Torn pages, but all there')
 
+        time.sleep(5)
         # and shes done
         self.client.find_element_by_xpath('//button[@type="submit"]').click()
 
@@ -67,7 +68,7 @@ class ItemTests(SeleniumTest):
         self.assertEqual(len(items), len(edit_forms))
 
         # finally she can go directly to a page
-        links = self.client.find_elements_by_css_selector('.item-stub  a')
+        links = self.client.find_elements_by_css_selector('.item-stub  a:last-of-type')
         self.assertEqual(len(items), len(links))
 
         links[0].click()
@@ -77,3 +78,26 @@ class ItemTests(SeleniumTest):
     def test_omega_can_delete_her_items_from_her_dashboard(self):
         # omega signs in
         self.fail('write this test')
+
+    def test_omega_can_upload_images_to_her_items(self):
+        self.login('omega@email.com', 'password')
+        items = self.client.find_elements_by_css_selector('.item-stub')
+
+        # she selects the first one
+        item = items[0]
+        item.find_element_by_xpath('//a[contains(@href, "update")]').click()
+
+        # she needs to add images, since people like pics.
+        images = self.client.find_element_by_id('images')
+
+        # selenium does not support multiple image uploads
+        images.send_keys('/Users/Sohail/Downloads/vivaldi_4seasons245.jpeg')
+
+        # and then shes done uploading files and then clicks submit.
+        self.client.find_element_by_xpath('//button[@type="submit"]').click()
+
+        self.assertNotIn('update', self.client.current_url)
+
+
+
+

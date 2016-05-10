@@ -37,7 +37,6 @@ class ItemControllerUnitTests(TestCase):
         form.validate = mock.MagicMock(return_value=True)
         item = Item()
         type(item).id = mock.PropertyMock(return_value=2)
-        print(item.id)
 
         create()
         flash.assert_called_with('You just made a new item!', 'success')
