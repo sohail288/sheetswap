@@ -15,6 +15,7 @@ from models import Trade, Item, User
 from . import trade_routes
 
 from app.decorators import user_is_part_of_trade, user_is_logged_in
+from util.emailing import send_mail
 
 
 @trade_routes.before_request
@@ -54,6 +55,11 @@ def request_trade(requested_item_id):
                       item_to=requested_item)
     g.db.add(new_trade)
     g.db.commit()
+
+    send_mail(requested_item.user.email, 'Got a new request!', 'emails/trade_requested',
+              user_from = g.user.username,
+              title = requested_item.sheetmusic.title)
+
     flash("Requested a trade for {} with {}".format(requested_item.sheetmusic.title,
                                                     requested_item.user.username),
           "success")

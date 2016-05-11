@@ -13,6 +13,14 @@ class Config:
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'media/images')
     ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'tiff'}
 
+    # emailing
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT   = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    DEFAULT_SEND_FROM = 'noreply@sheetswap.com'
+
     @staticmethod
     def init_app(app):
         pass
