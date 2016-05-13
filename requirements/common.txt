@@ -18,3 +18,4 @@ psycopg2==2.6.1
 Pillow==3.2.0
 blinker==1.4
 Flask-Mail==0.9.1
+celery==3.1.23

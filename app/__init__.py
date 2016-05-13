@@ -1,9 +1,13 @@
 import os
+from celery import Celery
 
 from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from config import get_env_config
 
+
+celery = Celery(__name__, include = ['util.emailing'])
+celery.config_from_object('celeryconfig')
 bootstrap = Bootstrap()
 
 def create_app(app_settings = None):
