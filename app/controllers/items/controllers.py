@@ -17,6 +17,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 
 from . import items_routes
+from .tasks import save_image, get_thumbnail_filename
 from models import Item, Sheetmusic, ItemImage
 from models.items.forms import CreateItemForm, EditItemForm
 from models.sheets.forms import SheetMusicForm
@@ -25,12 +26,7 @@ from config import get_env_config
 
 app_settings = get_env_config()
 
-thumbnail_size = 400, 300
-def create_thumbnail(image, filename):
-    im = Image.open(image)
-    im.thumbnail(thumbnail_size, Image.ANTIALIAS)
-    thumbnail_name = filename + '.thumbnail'
-    im.save(os.path.join(app_settings.UPLOAD_FOLDER, thumbnail_name), "JPEG")
+
 
 @items_routes.route('/')
 def main():
@@ -57,7 +53,7 @@ def create():
                 ext = file.filename.rsplit('.', 1)[-1]
                 filename = g.user.username + '_' + str(uuid4()) + '.'+ ext
                 image = ItemImage(filename)
-                file.save(os.path.join(app_settings.UPLOAD_FOLDER, filename))
+                save_image(file, filename)
                 new_item._images.append(image)
         g.db.commit()
 
@@ -95,8 +91,7 @@ def update(item_id):
                 ext = file.filename.rsplit('.', 1)[-1]
                 filename = g.user.username + '_' + str(uuid4()) + '.'+ ext
                 image = ItemImage(filename)
-                file.save(os.path.join(app_settings.UPLOAD_FOLDER, filename))
-                create_thumbnail(file, filename)
+                save_image(file, filename)
                 item._images.append(image)
         g.db.commit()
         flash('item updated', 'success')
@@ -125,4 +120,6 @@ def get_image(filename):
 
 @items_routes.route('/images/thumbnail/<string:filename>')
 def get_thumbnail(filename):
-    return send_from_directory(app_settings.UPLOAD_FOLDER, filename+'.thumbnail')
+    thumbnail_filename = get_thumbnail_filename(filename)
+
+    return send_from_directory(app_settings.UPLOAD_FOLDER, thumbnail_filename)

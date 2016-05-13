@@ -3,18 +3,16 @@
 """
 
 from flask.ext.script import Manager
-from flask.ext.mail import Mail
 from flask import g, session, request
 
-from app import create_app
+from app import get_or_create_app
 from app.db import db_session, init_db
 from models.auth import User
 from util.jinja_filters.jinja_filters import pluralize, time_ago
 
 
-smtrade = create_app()
+smtrade = get_or_create_app()
 manager = Manager(smtrade)
-mail = Mail(smtrade)
 
 @smtrade.teardown_appcontext
 def shutdown_session(exception=None):
