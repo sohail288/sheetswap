@@ -56,9 +56,10 @@ def request_trade(requested_item_id):
     g.db.add(new_trade)
     g.db.commit()
 
-    send_mail(requested_item.user.email, 'Got a new request!', 'emails/trade_requested',
+    send_mail.delay(requested_item.user.email, 'Got a new request!', 'emails/trade_requested',
               user_from = g.user.username,
-              title = requested_item.sheetmusic.title)
+              title = requested_item.sheetmusic.title
+    )
 
     flash("Requested a trade for {} with {}".format(requested_item.sheetmusic.title,
                                                     requested_item.user.username),
