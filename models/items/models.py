@@ -12,7 +12,6 @@ from datetime import datetime
 
 from app.db import Base
 
-#from models.sheets import Sheetmusic
 from models.trades import Trade
 
 condition_map = dict([
@@ -20,10 +19,11 @@ condition_map = dict([
     ('clean', 'Clean'),
     ('okay', 'Not too bad'),
     ('marked', 'Has markings'),
-    ('missing','Is missing pages'),
+    ('missing', 'Is missing pages'),
     ('torn', 'Torn pages, but all there'),
     ('old', 'Oldish')
 ])
+
 
 class Item(Base):
 
@@ -66,21 +66,19 @@ class Item(Base):
 
     def __repr__(self):
         return "<Item id = {} sheetmusic={} user={} condition={}>".format(self.id,
-                                                                  self.sheetmusic.title,
-                                                                  self.user.username,
-                                                                  self.condition)
+                                                                          self.sheetmusic.title,
+                                                                          self.user.username,
+                                                                          self.condition)
 
     @property
     def condition_text(self):
         return condition_map[self.condition]
 
 
-
-
 class ItemImage(Base):
     __tablename__ = 'item_images'
 
-    item_id =  Column(Integer, ForeignKey('items.id'))
+    item_id = Column(Integer, ForeignKey('items.id'))
     item = relationship('Item', back_populates='_images')
     timestamp = Column(DateTime(), default=datetime.now)
     image = Column(Unicode(256), nullable=False, unique=True)
@@ -90,4 +88,3 @@ class ItemImage(Base):
 
     def __repr__(self):
         return "<ItemImage item_id={} timestamp={}>".format(self.item_id, self.timestamp)
-
