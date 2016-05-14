@@ -8,11 +8,15 @@ from functools import wraps
 from flask import g, request, redirect, url_for, flash
 
 
-#def owns_item()
+# def owns_item()
 """ This decorator makes sure that the item belongs to the user """
 
+
 def user_is_part_of_trade(on_error=404):
-    """ This decorator makes sure that the user is a part of the trade """
+    """ Checks to see if user is part of trade
+    :param on_error: What to do on error
+    :return: returns the decorator for decorative purposes
+    """
     def decorator(func):
         @wraps(func)
         def wrapper(trade_id, *args, **kwargs):
@@ -34,6 +38,7 @@ def user_is_logged_in(func):
         return func(*args, **kwargs)
 
     return wrapper
+
 
 def user_passes_test(test_func=lambda: False):
     def decorator(func):
