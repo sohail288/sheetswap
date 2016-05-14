@@ -5,10 +5,9 @@ from flask import (request,
                    session,
                    g,
                    url_for,
-                    flash,
+                   flash,
                    redirect,
-                    render_template,
-)
+                   render_template)
 
 from models import Trade, Item, User
 

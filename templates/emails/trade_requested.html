@@ -6,7 +6,7 @@
 
 {% block page_content %}
     <h2>You have a new trade from {{ user_from }} for {{ title }}!</h2>
-    <h3><a href="sheetswap.com">Login</a> to your account to check it out!</h3>
+    <h3><a href="{{ url_for('auth.login', _external=True) }}">Login</a> to your account to check it out!</h3>
 {% endblock %}
 
 {% block footer %}
