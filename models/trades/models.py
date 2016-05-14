@@ -21,19 +21,18 @@ class Trade(Base):
     item_to_id = Column(Integer, ForeignKey('items.id'), nullable=False)
 
     item_from = relationship('Item', back_populates='trades', foreign_keys=[item_from_id])
-    item_to   = relationship('Item', back_populates='trades', foreign_keys=[item_to_id])
+    item_to = relationship('Item', back_populates='trades', foreign_keys=[item_to_id])
 
     user_from_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    user_to_id   = Column(Integer, ForeignKey('users.id'))
+    user_to_id = Column(Integer, ForeignKey('users.id'))
     user_from = relationship('User', foreign_keys=[user_from_id])
     user_to = relationship('User', foreign_keys=[user_to_id])
 
     completed = Column(Boolean, default=False)
-    rejected  = Column(Boolean, default=False)
+    rejected = Column(Boolean, default=False)
 
     trade_init_timestamp = Column(DateTime(), default=datetime.now)
     trade_fin_timestamp = Column(DateTime())
-
 
     @validates('item_from', 'item_to', 'user_from_id', 'user_to_id')
     def validate_items_are_from_owners(self, key, value):
@@ -56,7 +55,6 @@ class Trade(Base):
                 assert value == self.item_to.user.id
 
         return value
-
 
     def __repr__(self):
         return "<Trade from_user={} to_user={} from_item={} to_item={}>".format(

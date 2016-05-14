@@ -7,6 +7,7 @@ import datetime
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 
+
 def pluralize(word, quantity, plural_form='s'):
     if quantity == 1:
         return word
@@ -20,14 +21,15 @@ def pluralize(word, quantity, plural_form='s'):
 
 word_numbers = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven']
 
+
 def time_ago(date, today=datetime.datetime.now()):
 
     if not isinstance(today, datetime.datetime):
         today = parse(today)
     if not isinstance(date, datetime.datetime):
-        date_obj = parse(date)
+        date = parse(date)
 
-    time_delta = relativedelta(today, date_obj)
+    time_delta = relativedelta(today, date)
 
     if not any([time_delta.months, time_delta.days, time_delta.weeks, time_delta.years]):
         date_since_string = 'today'
@@ -51,5 +53,3 @@ def time_ago(date, today=datetime.datetime.now()):
     date_string = 'Added ' + date_since_string
     date_string += ' ago' if not date_string.endswith('day') else ''
     return date_string
-
-

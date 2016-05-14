@@ -14,9 +14,11 @@ from util.jinja_filters.jinja_filters import pluralize, time_ago
 smtrade = get_or_create_app()
 manager = Manager(smtrade)
 
+
 @smtrade.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
 
 @smtrade.before_request
 def before_request():
@@ -35,11 +37,13 @@ def inject_user():
         context = dict(current_user=None)
     return context
 
+
 @smtrade.context_processor
 def inject_pluralize():
     return dict(pluralize=pluralize)
 
 smtrade.jinja_env.filters['time_ago'] = time_ago
+
 
 def get_decorated_app():
     return smtrade

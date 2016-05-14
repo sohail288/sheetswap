@@ -5,6 +5,7 @@ Declares the Base Model by augmenting the declarative_base
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy import Column, Integer
 
+
 class Base(object):
 
     @declared_attr
@@ -18,5 +19,3 @@ class Base(object):
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base(cls=Base)
-
-

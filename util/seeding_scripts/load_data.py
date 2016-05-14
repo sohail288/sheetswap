@@ -14,13 +14,14 @@ from faker import Factory
 from app.db import db_session, init_db
 from config import get_env_config
 from models.sheets import Sheetmusic, Genre, Instrument
-from models.auth   import User, Address
+from models.auth import User, Address
 from models.items import Item, ItemImage
 from models.trades import Trade
 
 
 config_obj = get_env_config()
 DATA_DIRECTORY = path.join(config_obj.BASE_DIR, 'util/seed_data')
+
 
 def load_sheet_music():
     with open(path.join(DATA_DIRECTORY, 'sheet_music.json'), 'r') as fh:
@@ -29,7 +30,7 @@ def load_sheet_music():
         for sheet_music in data['sheet_music']:
             if not db_session.query(Sheetmusic).filter_by(title=sheet_music['title']).first():
                 instrumentation = sheet_music.pop('instrumentation', None)
-                genres          = sheet_music.pop('genre_tags', None)
+                genres = sheet_music.pop('genre_tags', None)
                 new_obj = Sheetmusic(**sheet_music)
 
                 new_obj.parse_tags(instrumentation, Instrument, 'instrumentation')
@@ -57,8 +58,12 @@ def load_users():
                 # print("added", new_user_obj, new_address_objs)
                 db_session.commit()
 
+
 def load_items(n=50):
-    """Load items into DB. The images """
+    """
+    :param n: number of items to insert into database
+    :return: None
+    """
     conditions = ['clean', 'okay', 'torn', 'incomplete']
     description = ["A test description\nThis sheet is cool"]
 
@@ -76,7 +81,7 @@ def load_items(n=50):
         item.description = random.choice(description)
 
         # add 4 images to each item
-        item.images = [ItemImage("{}_{}".format(user.username, uuid.uuid4())) for i in range(4)]
+        item.images = [ItemImage("{}_{}".format(user.username, uuid.uuid4())) for _ in range(4)]
 
         db_session.add(item)
         # print(item)
@@ -85,10 +90,10 @@ def load_items(n=50):
 
 def load_trades(n=10):
     """ Create and store several trade items.
+    :param n: number of trades to insert into database
     :return: None
     """
     random.seed(0)
-    items = db_session.query(Item).all()
     users = db_session.query(User).all()
 
     for i in range(n):
@@ -96,22 +101,16 @@ def load_trades(n=10):
         from_item, to_item = random.choice(from_user.items), random.choice(to_user.items)
 
         trade = Trade(user_from_id=from_user.id,
-                  user_to_id=to_user.id,
-                  item_from = from_item,
-                  item_to = to_item)
-        # print(trade)
+                      user_to_id=to_user.id,
+                      item_from=from_item,
+                      item_to=to_item)
         db_session.add(trade)
         db_session.commit()
 
 
-def load_data(*args, **kwargs):
-
-    session = db_session()
-
+def load_data():
     load_sheet_music()
     load_users()
     load_items()
     load_trades()
     db_session.remove()
-
-

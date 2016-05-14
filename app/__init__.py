@@ -46,28 +46,30 @@ def create_app(app_settings=None):
 
     return app
 
+
 def get_or_create_app():
     global app
     if not app:
         app = create_app()
     return app
 
+
 def get_or_create_celery():
     global celeryApp
     app = get_or_create_app()
 
     if celeryApp is None:
-        celery = Celery(app.import_name, include = ['util.emailing', 'app.controllers.items.tasks'])
+        celery = Celery(app.import_name, include=['util.emailing', 'app.controllers.items.tasks'])
         celery.config_from_object('celeryconfig')
         TaskBase = celery.Task
+
         class ContextTask(TaskBase):
             abstract = True
+
             def __call__(self, *args, **kwargs):
                 with app.test_request_context():
-                    return super(ContextTask,self).__call__(*args, **kwargs)
+                    return super(ContextTask, self).__call__(*args, **kwargs)
 
         celery.Task = ContextTask
         celeryApp = celery
     return celeryApp
-
-

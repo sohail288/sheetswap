@@ -31,9 +31,10 @@ def search_results():
     q = request.args.get('q', None)
     if q:
         results = g.db.query(Sheetmusic).filter(Sheetmusic.title.like('%{}%'.format(q))).all()
-        return render_template('search_results.html', results=results, q = q)
+        return render_template('search_results.html', results=results, q =q)
     flash('Need to search for something', 'error')
     return redirect(url_for('.index'))
+
 
 @main_routes.route('/dashboard')
 @user_is_logged_in

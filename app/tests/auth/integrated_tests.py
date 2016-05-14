@@ -1,6 +1,7 @@
 from app.tests.test_base import AppTest, DBTest
 from models import User, Item, Trade, Sheetmusic
 
+
 class IntegratedTests(DBTest):
 
     def test_items_displayed_do_not_include_items_in_completed_trades(self):
@@ -11,11 +12,11 @@ class IntegratedTests(DBTest):
 
         self.assertEqual(user1.items, user1.get_available_items())
 
-        trade = Trade(item_to = item, user_to = user1, user_from = user2)
+        trade = Trade(item_to=item, user_to=user1, user_from=user2)
         self.assertEqual(user1.items, user1.get_available_items())
 
         trade.completed = True
-        trade.rejected  = True
+        trade.rejected = True
         self.assertEqual(user1.items, user1.get_available_items())
 
         trade.rejected = False
