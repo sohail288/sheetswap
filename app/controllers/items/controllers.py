@@ -27,11 +27,11 @@ from config import get_env_config
 app_settings = get_env_config()
 
 
-
 @items_routes.route('/')
 def main():
-    items = g.db.query(Item).filter(Item.available == True)
+    items = g.db.query(Item).filter(Item.available == True).all()
     return render_template('items/index.html', items=items)
+
 
 @items_routes.route('/create', methods=['POST', 'GET'])
 @user_is_logged_in
@@ -51,7 +51,7 @@ def create():
         for file in request.files.getlist('images'):
             if file:
                 ext = file.filename.rsplit('.', 1)[-1]
-                filename = g.user.username + '_' + str(uuid4()) + '.'+ ext
+                filename = g.user.username + '_' + str(uuid4()) + '.' + ext
                 image = ItemImage(filename)
                 save_image(file, filename)
                 new_item._images.append(image)
@@ -64,6 +64,7 @@ def create():
     if sheetmusic_id:
         form.sheetmusic_id.data = sheetmusic_id
     return render_template('items/create_item.html', form=form)
+
 
 @items_routes.route('/<int:item_id>')
 def index(item_id):
@@ -89,7 +90,7 @@ def update(item_id):
         for file in request.files.getlist('images'):
             if file:
                 ext = file.filename.rsplit('.', 1)[-1]
-                filename = g.user.username + '_' + str(uuid4()) + '.'+ ext
+                filename = g.user.username + '_' + str(uuid4()) + '.' + ext
                 image = ItemImage(filename)
                 save_image(file, filename)
                 item._images.append(image)
@@ -97,6 +98,7 @@ def update(item_id):
         flash('item updated', 'success')
         return redirect(url_for('.index', item_id=item_id))
     return render_template('items/update_item.html', form=form, item_id=item_id)
+
 
 @items_routes.route('/<int:item_id>/remove', methods=['POST'])
 @user_is_logged_in
@@ -117,6 +119,7 @@ def remove(item_id):
 @items_routes.route('/images/<string:filename>')
 def get_image(filename):
     return send_from_directory(app_settings.UPLOAD_FOLDER, filename)
+
 
 @items_routes.route('/images/thumbnail/<string:filename>')
 def get_thumbnail(filename):

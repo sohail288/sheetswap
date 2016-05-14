@@ -22,6 +22,7 @@ from util.emailing import send_mail
 def before_request():
     pass
 
+
 @trade_routes.route('/<int:trade_id>')
 @user_is_part_of_trade()
 def main(trade_id):
@@ -36,7 +37,7 @@ def main(trade_id):
         return redirect('main.dashboard')
 
     user_from = trade.user_from
-    user_to   = trade.user_to
+    user_to = trade.user_to
 
     return render_template('trades/main.html', trade=trade,
                            user_from=user_from,
@@ -44,10 +45,11 @@ def main(trade_id):
 
 
 def user_doesnt_already_have_an_active_trade_with_item():
-    item_id = int(request.url.rsplit('/',1)[-1])
+    item_id = int(request.url.rsplit('/', 1)[-1])
     if item_id in [trade.item_to_id for trade in g.user.trades]:
         return False
     return True
+
 
 @trade_routes.route('/request/<int:requested_item_id>', methods=['POST'])
 @user_passes_test(test_func=user_doesnt_already_have_an_active_trade_with_item)
@@ -56,21 +58,21 @@ def request_trade(requested_item_id):
     to_user_id = requested_item.user.id
     from_user_id = g.user.id
 
-    new_trade = Trade(user_from_id = from_user_id,
-                      user_to_id = to_user_id,
+    new_trade = Trade(user_from_id=from_user_id,
+                      user_to_id=to_user_id,
                       item_to=requested_item)
     g.db.add(new_trade)
     g.db.commit()
 
     send_mail.delay(requested_item.user.email, 'Got a new request!', 'emails/trade_requested',
-              user_from = g.user.username,
-              title = requested_item.sheetmusic.title
-    )
+                    user_from=g.user.username,
+                    title=requested_item.sheetmusic.title)
 
     flash("Requested a trade for {} with {}".format(requested_item.sheetmusic.title,
                                                     requested_item.user.username),
           "success")
     return redirect(url_for('main.index'))
+
 
 @trade_routes.route('/accept/<int:trade_id>', methods=['POST'])
 @user_is_part_of_trade()
@@ -81,11 +83,10 @@ def accept_trade(trade_id):
     If trade is accepted, a trading session is initialized
     """
     trade = Trade.query.filter_by(id=trade_id).one()
-
-
     session['TRADING'] = True
     session['trade_id'] = trade_id
     return redirect(url_for('.trading', from_user_id=trade.user_from_id))
+
 
 @trade_routes.route('/reject/<int:trade_id>', methods=['POST'])
 @user_is_part_of_trade()
@@ -99,8 +100,9 @@ def reject_trade(trade_id):
     g.db.commit()
 
     flash("Rejected trade from {} for {}".format(from_user.username,
-        trade.item_to.sheetmusic.title), 'success')
+                                                 trade.item_to.sheetmusic.title), 'success')
     return redirect(url_for('main.dashboard'))
+
 
 @trade_routes.route('/trading', methods=['POST', 'GET'])
 def trading():
@@ -111,11 +113,10 @@ def trading():
         trade = g.db.query(Trade).filter_by(id=trade_id).one()
         from_item = Item.query.filter_by(id=from_item_id).one()
 
-
         trade.item_from = from_item
         trade.completed = True
         trade.trade_fin_timestamp = datetime.now()
-        trade.item_to.available =  False
+        trade.item_to.available = False
         trade.item_from.available = False
 
         g.db.commit()
@@ -141,8 +142,3 @@ def trading():
 
 #@trade_routes.route('/complete/<int:item_id>/<int:trade_id>')
 #def complete(item_id, trade_id):
-
-
-
-
-
