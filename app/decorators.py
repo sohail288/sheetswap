@@ -35,3 +35,14 @@ def user_is_logged_in(func):
 
     return wrapper
 
+def user_passes_test(test_func=lambda: False):
+    def decorator(func):
+        @user_is_logged_in
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if test_func():
+                return func(*args, **kwargs)
+            else:
+                abort(403)
+        return wrapper
+    return decorator
