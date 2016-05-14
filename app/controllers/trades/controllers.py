@@ -13,7 +13,7 @@ from models import Trade, Item, User
 
 from . import trade_routes
 
-from app.decorators import user_is_part_of_trade, user_is_logged_in
+from app.decorators import user_is_part_of_trade, user_is_logged_in, user_passes_test
 from util.emailing import send_mail
 
 
@@ -43,7 +43,14 @@ def main(trade_id):
                            user_to=user_to)
 
 
+def user_doesnt_already_have_an_active_trade_with_item():
+    item_id = int(request.url.rsplit('/',1)[-1])
+    if item_id in [trade.item_to_id for trade in g.user.trades]:
+        return False
+    return True
+
 @trade_routes.route('/request/<int:requested_item_id>', methods=['POST'])
+@user_passes_test(test_func=user_doesnt_already_have_an_active_trade_with_item)
 def request_trade(requested_item_id):
     requested_item = Item.query.filter_by(id=requested_item_id).one()
     to_user_id = requested_item.user.id

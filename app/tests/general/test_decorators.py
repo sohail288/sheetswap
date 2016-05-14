@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from flask import url_for
 from app.tests.test_base import AppTest
-from app.decorators import user_is_part_of_trade, user_is_logged_in
+from app.decorators import user_is_part_of_trade, user_is_logged_in, user_passes_test
 
 
 @mock.patch('app.decorators.url_for')
@@ -85,6 +85,30 @@ class DecoratorTests(unittest.TestCase):
 
         url_for.assert_called_with('auth.login', next=request.path)
 
+    @mock.patch('app.decorators.request')
+    @mock.patch('app.decorators.abort')
+    def test_user_passes_a_test_to_do_something(self, abort, request, g, flash, redirect, url_for):
+        g.configure_mock(user=self.User(1, []))
+
+        def prevent_user_with_id_one(): return False if g.user.id == 1 else True
+
+        @user_passes_test(test_func=prevent_user_with_id_one)
+        def a_controller():
+            return 'secret info'
+
+        rv = a_controller()
+        self.assertTrue(abort.called)
+        abort.reset_mock()
+
+        g.configure_mock(user=self.User(2, []))
+
+        rv = a_controller()
+        self.assertFalse(abort.called)
+        self.assertEqual(rv, 'secret info')
+
+
+
+
 class DecoratorContextTests(AppTest):
 
     def test_user_is_logged_in__redirects_to_login_page(self):
@@ -114,6 +138,7 @@ class DecoratorContextTests(AppTest):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('Welcome', response.get_data(as_text=True))
+
 
 
 
