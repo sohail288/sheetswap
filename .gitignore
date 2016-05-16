@@ -100,7 +100,7 @@ static/bower_components
 notes.txt
 
 # env
-.env_local
+.env*
 
 # scratch ipynb
 scratch.ipynb

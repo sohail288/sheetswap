@@ -45,6 +45,10 @@ def inject_pluralize():
 smtrade.jinja_env.filters['time_ago'] = time_ago
 
 
+@manager.command
+def create_db():
+    init_db()
+
 def get_decorated_app():
     return smtrade
 
