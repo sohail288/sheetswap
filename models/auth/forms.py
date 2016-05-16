@@ -4,6 +4,7 @@ import re
 
 EMAIL_RE = r'^[A-Z0-9+_.-]+@[A-Z0-9.-]+$'
 
+
 class RegistrationForm(Form):
     email = StringField('Email', [validators.InputRequired(),
                                   validators.Regexp(EMAIL_RE, flags=re.IGNORECASE)])
@@ -26,4 +27,3 @@ class AddressForm(Form):
                               [validators.Regexp('[0-9-]', message='Numbers and hyphens only')],
                               id='postal-code')
     country = StringField('Country')
-

@@ -14,12 +14,13 @@ from models.items import Item
 SheetmusicGenres = Table('sheetmusic_genres', Base.metadata,
                          Column('sheetmusic_id', Integer, ForeignKey('sheetmusic.id')),
                          Column('genre_id', Integer, ForeignKey('genres.id'))
-)
+                         )
 
 SheetmusicInstruments = Table('sheetmusic_instruments', Base.metadata,
                               Column('sheetmusic_id', Integer, ForeignKey('sheetmusic.id')),
                               Column('instrument_id', Integer, ForeignKey('instruments.id'))
-)
+                              )
+
 
 class Sheetmusic(Base):
     __tablename__ = "sheetmusic"
@@ -28,25 +29,25 @@ class Sheetmusic(Base):
     cover = Column(Unicode(255), unique=True)
     composer = Column(Unicode(255))
     arranged_by = Column(Unicode(255))
-    #key = Column(Unicode(8))
+    # TODO: implement key signature column 'key = Column(Unicode(8))'
 
     time_signature = Column(Unicode(64))
 
-    genre_tags =  relationship('Genre',
-                               secondary=SheetmusicGenres,
-                               back_populates='sheetmusic')
+    genre_tags = relationship('Genre',
+                              secondary=SheetmusicGenres,
+                              back_populates='sheetmusic')
     instrumentation = relationship('Instrument',
                                    secondary=SheetmusicInstruments,
                                    back_populates='sheetmusic')
 
     items = relationship('Item', back_populates='sheetmusic')
 
-    def __init__(self,  *args, **kwargs):
+    def __init__(self, **kwargs):
         """ Take the instrumentation and genre_tags kwarg and use parse on them
             Handles the rest of the kwargs normally
         """
         instrumentation_string = kwargs.pop('instrumentation', None)
-        genre_string           = kwargs.pop('genre_tags', None)
+        genre_string = kwargs.pop('genre_tags', None)
 
         if instrumentation_string:
             self.parse_tags(instrumentation_string, Instrument, 'instrumentation')
@@ -58,9 +59,6 @@ class Sheetmusic(Base):
             if hasattr(self, key):
                 setattr(self, key, val)
 
-
-
-
     def __repr__(self):
         return '<Sheetmusic id={} title={} composer={}>'.format(
             self.id,
@@ -68,15 +66,16 @@ class Sheetmusic(Base):
             self.composer
         )
 
-    def parse_tags(self, tag_string, TagObj, rel):
+    def parse_tags(self, tag_string, tag_obj, rel):
         tag_set = set(tag.strip().lower() for tag in tag_string.split(','))
-        tags = [TagObj.query.filter(TagObj.name == tag).first()
-                or TagObj(tag)
+        tags = [tag_obj.query.filter(tag_obj.name == tag).first() or
+                tag_obj(tag)
                 for tag in tag_set]
 
         for tag in tags:
             if tag not in getattr(self, rel):
                 getattr(self, rel).append(tag)
+
 
 class Genre(Base):
     """ Defines a Genre model. One Sheetmusic can have multiple Genre"""
@@ -105,6 +104,7 @@ class Instrument(Base):
     sheetmusic = relationship('Sheetmusic',
                               secondary=SheetmusicInstruments,
                               back_populates='instrumentation')
+
     def __init__(self, name):
         self.name = name
 
@@ -117,5 +117,3 @@ class Instrument(Base):
         :return: boolean True if both objects are equal
         """
         return bool(isinstance(other, type(self)) and self.name == other.name)
-
-

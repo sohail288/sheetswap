@@ -6,7 +6,7 @@ from flask import (g,
                    flash,
                    request,
                    render_template,
-                    url_for,
+                   url_for,
                    redirect)
 
 from sqlalchemy.sql import text
@@ -33,7 +33,7 @@ def populate_sheet_music(form, sheet_music):
 def main():
     sheets = g.db.query(Sheetmusic).all()
 
-    return render_template('sheets/index.html', sheets = sheets)
+    return render_template('sheets/index.html', sheets=sheets)
 
 
 @sheets_routes.route('/create', methods=['POST', 'GET'])
@@ -49,32 +49,29 @@ def create():
         if form.creating_item.data:
             flash("{} has been added to the database. Enter your copy's details below".format(sheetmusic.title),
                   "success")
-            return redirect(url_for('items.create', sheetmusic_id = sheetmusic.id))
-
+            return redirect(url_for('items.create', sheetmusic_id=sheetmusic.id))
         else:
             flash("Added {}".format(form.title))
             return redirect(url_for('.main'))
 
-
     form.creating_item.data = int(request.args.get("creating_item", 0))
-
     return render_template('sheets/create_sheet_music.html', form=form)
 
 
 @sheets_routes.route('/<int:sheet_music_id>', methods=['GET'])
 def index(sheet_music_id):
-    sheet_music = g.db.query(Sheetmusic).filter_by(id = sheet_music_id).first()
+    sheet_music = g.db.query(Sheetmusic).filter_by(id=sheet_music_id).first()
     if g.user:
         requested_items = [trade[0] for trade in
                            g.db.execute(text("SELECT item_to_id FROM trades WHERE trades.user_from_id=:x")
                                         .params(x=g.user.id)).fetchall()]
+    else:
+        requested_items = []
     items_available = [item for item in sheet_music.items
-                       if not g.user or item.user_id != g.user.id
-                       and item.id not in requested_items
-                       and item.available]
+                       if not g.user or item.user_id != g.user.id and
+                       item.id not in requested_items and item.available]
 
     return render_template('sheets/sheet_music_page.html',
                            sheet_music=sheet_music,
-                           items = items_available)
-
+                           items=items_available)
 

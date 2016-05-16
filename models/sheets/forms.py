@@ -27,6 +27,3 @@ class SheetMusicForm(Form):
     time_signature = StringField(u'Time Signature', [validators.Regexp(regex=TS_REGEXP)])
     cover = FileField(u'Cover Picture',  [validators.Optional(), validators.regexp(u'^[^\\/]+\.(jpg|png)$')])
     creating_item = HiddenInteger('creating_item')
-
-
-

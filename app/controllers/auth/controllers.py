@@ -22,6 +22,7 @@ TEST_PASSWORD = 'johnnytest'
 def index():
     return redirect(url_for('main.index'))
 
+
 @auth_routes.route('/logout')
 def logout():
     if session.get('logged_in'):
@@ -29,6 +30,7 @@ def logout():
         session.pop('current_user_id', None)
         flash('logged out', 'success')
     return redirect(url_for('main.index'))
+
 
 @auth_routes.route('/login', methods=['POST', 'GET'])
 def login():
@@ -50,6 +52,7 @@ def login():
 
     return render_template('auth/login.html', form=form)
 
+
 @auth_routes.route('/register', methods=['POST', 'GET'])
 def register():
     form = RegistrationForm(request.form)
@@ -68,12 +71,12 @@ def register():
     return render_template('auth/registration.html', form=form)
 
 
-
 @auth_routes.route('/addresses')
 @user_is_logged_in
 def list_addresses():
     addresses = g.user.addresses
     return render_template('auth/address_list.html', addresses=addresses)
+
 
 @auth_routes.route('/addresses/<int:address_id>/edit', methods=['POST', 'GET'])
 @user_is_logged_in

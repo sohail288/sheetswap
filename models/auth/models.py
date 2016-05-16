@@ -11,27 +11,27 @@ from app.db import Base
 TODO: IMPLEMENT AN UPGRADABLE HASHING ROUTINE: https://pythonhosted.org/passlib/lib/passlib.context-tutorial.html
 """
 
+
 class User(Base):
     __tablename__ = 'users'
 
     email = Column(Unicode(256), unique=True, nullable=False)
     username = Column(Unicode(256), unique=True, nullable=False)
-    password_hash = Column(Unicode(128), nullable=False )
-    admin =  Column(Boolean(), default=False)
-    created_on = Column(DateTime(), default = datetime.now)
-    updated_on = Column(DateTime(), default = datetime.now, onupdate=datetime.now)
+    password_hash = Column(Unicode(128), nullable=False)
+    admin = Column(Boolean(), default=False)
+    created_on = Column(DateTime(), default=datetime.now)
+    updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
 
     addresses = relationship('Address', back_populates='user')
     items = relationship('Item', back_populates='user')
 
     trades = relationship('Trade', primaryjoin="or_(Trade.user_from_id == User.id, "
-                                      "Trade.user_to_id == User.id)")
+                                               "Trade.user_to_id == User.id)")
 
     @validates('email')
     def validate_email(self, key, address):
         assert '@' in address and address.split('@')[1] != ''
         return address
-
 
     @property
     def password(self):
@@ -55,7 +55,7 @@ class User(Base):
         if password:
             self.password = password
 
-        for k,v in kwargs.items():
+        for k, v in kwargs.items():
             if hasattr(self, k):
                 setattr(self, k, v)
 
@@ -66,6 +66,7 @@ class User(Base):
     def get_available_items(self):
         return [item for item in self.items
                 if not any([trade.completed and not trade.rejected for trade in item.trades])]
+
 
 class Address(Base):
     __tablename__ = 'addresses'
@@ -83,4 +84,3 @@ class Address(Base):
         return "<Address user={} street_address={} city={}>".format(self.user,
                                                                     self.street_address,
                                                                     self.city)
-
