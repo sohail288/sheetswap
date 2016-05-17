@@ -68,8 +68,8 @@ def _activate_env_files():
 
 def _create_or_update_virtualenv():
     with cd(SITE_FOLDER):
-        if not exists("./{}".format(virtualenv_folder)):
-            run('virtualenv --no-site-packages -p python3 {}'.format(virtualenv_folder))
+        if not exists("./{}".format(VIRTUALENV_FOLDER)):
+            run('virtualenv --no-site-packages -p python3 {}'.format(VIRTUALENV_FOLDER))
         # get the requirements
         run('{}/bin/pip install -r requirements/production.txt')
 
