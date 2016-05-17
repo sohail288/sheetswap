@@ -1,5 +1,8 @@
+import os
+from functools import partial
 from fabric.contrib.files import append, sed, exists
 from fabric.api import run, env, local, cd, sudo, put
+
 
 media_directories = "media/{images}"
 git_source = "https://github.com/sohail288/sheetswap.git"
@@ -74,15 +77,59 @@ def _create_or_update_virtualenv():
 def _initialize_postgresql():
     sudo('mkdir -p /usr/local/pgsql/data')
     sudo('/usr/lib/postgresql/9.3/bin/initdb -D /usr/local/pgsql/data')
-    sudo('chown postgres /usr/local/pgsql/data')
+    sudo('chown postgres.postgres /usr/local/pgsql/data')
+    sudo('chmod 750 /usr/local/pgsql/data')
     sudo('createdb sheetswap', user='postgres')
 
 def _initialize_app():
-    """ Does preliminary app steps
+    """ Does preliminary app steps.
     :return: None
     """
     with cd(SITE_FOLDER):
-        run('./{}/bin/python run.py create_db')
+        run("./{}/bin/python run.py create_db".format(VIRTUALENV_FOLDER))
+
+
+def _update_conf_scripts():
+    virtualenv_directory = os.path.join(SITE_FOLDER, VIRTUALENV_FOLDER)
+    static_directory = os.path.join(SITE_FOLDER, 'static')
+    sed_global_nb = partial(sed, backup="", flags="g")
+    with cd(SITE_FOLDER):
+        for script in os.listdir('scripts'):
+            # change all references to certain variables
+            file = os.path.join(SITE_FOLDER, "scripts/{}".format(script))
+            sed_global_nb(file, 'ROOT_DIRECTORY', SITE_FOLDER)
+            sed_global_nb(file, 'VIRTUALENV_DIRECTORY', virtualenv_directory)
+            sed_global_nb(file, 'HOST_NAME', env.host)
+            sed_global_nb(file, 'USER', env.user)
+            sed_global_nb(file, 'STATIC_DIRECTORY', static_directory)
+
+
+def _setup_nginx_server():
+    sudo('rm -f /etc/nginx/sites-enabled/default.conf')
+
+    with cd(SITE_FOLDER):
+        sudo('cp scripts/sheetswap_nginx.conf /etc/nginx/sites-available/{}.conf'.format(
+            env.host
+        ))
+
+    sudo('ln /etc/nginx/sites-available/{}.conf /etc/nginx/sites-enabled/'.format(
+        env.host
+    ))
+    sudo('service nginx restart')
+
+def _setup_supervisor():
+    with cd(SITE_FOLDER):
+        sudo('cp scripts/sheetswap.conf etc/supervisor/conf.d/{}.conf'.format(
+            env.host
+        ))
+
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+    sudo('supervisorctl start {}'.format(env.host))
+
+def _activate_start_file():
+    with cd(SITE_FOLDER):
+        run('chmod 750 scripts/start.sh')
 
 
 def deploy():
@@ -94,3 +141,8 @@ def deploy():
     _copy_over_env_files()
     _activate_env_files()
     _create_or_update_virtualenv()
+    _initialize_app()
+    _update_conf_scripts()
+    _activate_start_file()
+    _setup_nginx_server()
+    _setup_supervisor()

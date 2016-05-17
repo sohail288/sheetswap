@@ -1,2 +1,2 @@
 #!/bin/bash
-source /home/ubuntu/sheetswap/.env_production && /home/ubuntu/sheetswap/web/bin/gunicorn  wsgi:application
+source ROOT_DIRECTORY/.env_production && VIRTUALENV_DIRECTORY/bin/gunicorn  wsgi:application
