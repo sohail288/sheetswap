@@ -44,7 +44,9 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
-    pass
+    db_path = 'data.sqlite'
+    test_uri = 'sqlite:///' + os.path.join(Config.BASE_DIR, db_path)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('PRODUCTION_DATABASE_URL')
 
 
 config = {
