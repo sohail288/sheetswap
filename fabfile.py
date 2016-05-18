@@ -39,11 +39,13 @@ PYTHON_DEPENDENCIES = [
 def _setup_ec2_server():
     pass
 
+
 def _configure_globals():
-    global BASE_DIR, HOME_DIR, SITE_FOLDER, POSTGRES_PASSWORD
+    global BASE_DIR, HOME_DIR, SITE_FOLDER
     BASE_DIR = '/home/{user}/sites'.format(**env)
     HOME_DIR = '/home/{user}'.format(**env)
     SITE_FOLDER = '{}/{}'.format(BASE_DIR, env.host)
+
 
 def _create_base_directory():
     if not exists(BASE_DIR):
@@ -51,6 +53,7 @@ def _create_base_directory():
             run("mkdir sites")
     if not exists(SITE_FOLDER):
         run('mkdir {}'.format(SITE_FOLDER))
+
 
 def _create_extra_directories(site_folder, extra_directories=[]):
     with cd(BASE_DIR):
@@ -73,12 +76,13 @@ def _install_dependencies():
         for dependency in PYTHON_DEPENDENCIES:
             sudo('pip install {}'.format(dependency))
 
+
 def _copy_over_env_files():
     put('.env_production', SITE_FOLDER)
 
+
 def _activate_env_files():
     run("source {}/{}".format(SITE_FOLDER, '.env_production'))
-    time.sleep(5)
 
 
 def _create_or_update_virtualenv():
@@ -107,6 +111,7 @@ def _initialize_postgresql():
     with settings(warn_only=True):
         if sudo('psql -lqt | grep -i sheetswap', user='postgres').failed:
             sudo('createdb sheetswap', user='postgres')
+
 
 def _initialize_app():
     """ Does preliminary app steps.
@@ -144,6 +149,7 @@ def _setup_nginx_server():
     ))
     sudo('service nginx restart')
 
+
 def _setup_supervisor():
     with cd(SITE_FOLDER):
         sudo('cp scripts/sheetswap.conf /etc/supervisor/conf.d/{}.conf'.format(
@@ -153,6 +159,7 @@ def _setup_supervisor():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
     sudo('supervisorctl start {}'.format(env.host))
+
 
 def _activate_start_file():
     with cd(SITE_FOLDER):
