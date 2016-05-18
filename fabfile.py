@@ -185,7 +185,7 @@ def deploy():
     _initialize_postgresql()
     _initialize_app()
     _update_conf_scripts()
-    _activate_start_file()
+    _activate_start_files()
     _setup_nginx_server()
     _create_celery_directories()
     _setup_supervisor()
