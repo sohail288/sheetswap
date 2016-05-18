@@ -144,9 +144,10 @@ def _setup_nginx_server():
             env.host
         ))
 
-    sudo('ln /etc/nginx/sites-available/{}.conf /etc/nginx/sites-enabled/'.format(
-        env.host
-    ))
+    if not exists('/etc/nginx/sites-enabled/{}.conf'):
+        sudo('ln /etc/nginx/sites-available/{}.conf /etc/nginx/sites-enabled/'.format(
+            env.host
+        ))
     sudo('service nginx restart')
 
 
@@ -161,13 +162,15 @@ def _setup_supervisor():
     sudo('supervisorctl start {}'.format(env.host))
     sudo('supervisorctl start celery')
 
+
 def _create_celery_directories():
     sudo('mkdir -p /var/log/celery')
 
 
-def _activate_start_file():
+def _activate_start_files():
     with cd(SITE_FOLDER):
         run('chmod 750 scripts/start.sh')
+        run('chmod 750 scripts/celery_start.sh')
 
 
 def deploy():
