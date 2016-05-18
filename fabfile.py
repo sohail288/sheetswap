@@ -167,9 +167,10 @@ def _create_celery_directories():
     sudo('mkdir -p /var/log/celery')
 
 
-def _activate_start_file():
+def _activate_start_files():
     with cd(SITE_FOLDER):
         run('chmod 750 scripts/start.sh')
+        run('chmod 750 scripts/celery_start.sh')
 
 
 def deploy():
