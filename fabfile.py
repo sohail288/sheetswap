@@ -159,6 +159,10 @@ def _setup_supervisor():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
     sudo('supervisorctl start {}'.format(env.host))
+    sudo('supervisorctl start celery')
+
+def _create_celery_directories():
+    sudo('mkdir -p /var/log/celery')
 
 
 def _activate_start_file():
@@ -180,4 +184,5 @@ def deploy():
     _update_conf_scripts()
     _activate_start_file()
     _setup_nginx_server()
+    _create_celery_directories()
     _setup_supervisor()
