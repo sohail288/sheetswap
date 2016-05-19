@@ -36,6 +36,7 @@ PYTHON_DEPENDENCIES = [
     'virtualenv'
 ]
 
+
 def _setup_ec2_server():
     pass
 
@@ -66,6 +67,10 @@ def _get_source():
     with cd(SITE_FOLDER):
         if not exists('.git'):
             run('git clone {} .'.format(git_source))
+        last_commit = run('git log --pretty="%h" | head -n 1')
+
+        # revert to last commit to undo changes that may have occured since then
+        run("git reset --hard {}".format(last_commit))
         run('git pull')
 
 
@@ -160,7 +165,7 @@ def _setup_supervisor():
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
     sudo('supervisorctl start {}'.format(env.host))
-    sudo('supervisorctl start celery')
+    sudo("supervisorctl start {}_celery".format(env.host))
 
 
 def _create_celery_directories():
