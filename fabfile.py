@@ -2,8 +2,8 @@ import os
 import itertools
 import time
 from functools import partial
-from fabric.contrib.files import append, sed, exists
-from fabric.api import run, env, local, cd, sudo, put, settings
+from fabric.contrib.files import sed, exists
+from fabric.api import run, env, cd, sudo, put, settings
 
 
 media_directories = [os.path.join("media", media) for media in ['images']]
@@ -17,9 +17,6 @@ VIRTUALENV_FOLDER = 'virtenv'
 pg_trust = 'host    all             all             127.0.0.1/32            trust'
 pg_hba_sed_line = '# TYPE  DATABASE        USER            ADDRESS                 METHOD'
 
-
-env.key_filename = '/Users/Sohail/Downloads/sheetswap.pem'
-env.key_filename = '/Users/Sohail/.pems/testKP.pem'
 
 DEPENDENCIES = [
     'git',
@@ -149,7 +146,7 @@ def _setup_nginx_server():
             env.host
         ))
 
-    if not exists('/etc/nginx/sites-enabled/{}.conf'):
+    if not exists("/etc/nginx/sites-enabled/{}.conf".format(env.host)):
         sudo('ln /etc/nginx/sites-available/{}.conf /etc/nginx/sites-enabled/'.format(
             env.host
         ))
