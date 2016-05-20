@@ -1,12 +1,14 @@
+"""
+    Common tasks used throughout the controllers
+"""
+
 import os
 from PIL import Image
-from app import get_or_create_celery
+from app.celery_creator import celery
 from config import get_env_config
 
+
 app_settings = get_env_config()
-celery = get_or_create_celery()
-
-
 thumbnail_size = 400, 300
 
 
@@ -15,9 +17,11 @@ def get_thumbnail_filename(filename):
     return base + '.thumbnail' + ext
 
 
-def save_image(file, filename):
+def save_image(file, filename, create_thumbnail=True):
     file.save(os.path.join(app_settings.UPLOAD_FOLDER, filename))
-    make_thumbnail.delay(filename)
+
+    if create_thumbnail:
+        make_thumbnail.delay(filename)
 
 
 @celery.task

@@ -17,7 +17,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 
 from . import items_routes
-from .tasks import save_image, get_thumbnail_filename
+from app.tasks import save_image, get_thumbnail_filename
 from models import Item, Sheetmusic, ItemImage
 from models.items.forms import CreateItemForm, EditItemForm
 from models.sheets.forms import SheetMusicForm

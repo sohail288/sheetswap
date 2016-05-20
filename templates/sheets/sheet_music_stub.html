@@ -13,7 +13,11 @@
                      "{{ url_for('static',
                 filename='assets/images/sheet_image_stub.jpg') }}
                  {% else %}
-                    {{ sheet_music.cover }}
+                    {% if sheet_music.cover.startswith('http') %}
+                        {{ sheet_music.cover }}
+                     {% else %}
+                        {{ url_for('.get_thumbnail', filename=sheet_music.cover) }}
+                    {% endif %}
                  {% endif %}">
         </div>
 

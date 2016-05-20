@@ -6,6 +6,9 @@ class ItemTests(SeleniumTest):
 
     def test_can_create_item(self):
         self.fail("write this test")
+        self.login('omega@email.com', 'password')
+
+        # test the flow of item creation
 
 
     def test_omega_creates_an_item_and_then_modifies_it(self):

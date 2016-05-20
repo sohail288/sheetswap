@@ -3,5 +3,5 @@
 
 {% block page_content %}
     <h1> Add a Sheet Music to the Library</h1>
-    {{ forms.create_form(form, 'sheets.create') }}
+    {{ forms.create_form(form, 'sheets.create', enctype="multipart/form-data") }}
 {% endblock page_content %}

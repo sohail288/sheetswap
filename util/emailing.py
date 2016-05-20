@@ -1,10 +1,11 @@
 from flask import render_template, current_app
 from flask.ext.mail import Message
 from config import get_env_config
-from app import mail, get_or_create_celery
+from app import mail
+from app.celery_creator import celery
+
 
 app_settings = get_env_config()
-celery = get_or_create_celery()
 
 
 @celery.task

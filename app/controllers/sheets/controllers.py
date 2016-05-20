@@ -1,21 +1,26 @@
 """
 The controllers for sheets
 """
+from os.path import splitext
 
 from flask import (g,
                    flash,
                    request,
                    render_template,
                    url_for,
+                   send_from_directory,
                    redirect)
-
 from sqlalchemy.sql import text
+
 from . import sheets_routes
-
-from models.sheets import (Sheetmusic, Genre, Instrument)
+from models.sheets import Sheetmusic, Genre, Instrument
 from models.sheets.forms import SheetMusicForm
-
 from app.decorators import user_is_logged_in
+from app.tasks import save_image, get_thumbnail_filename
+from config import get_env_config
+
+
+app_settings = get_env_config()
 
 
 def populate_sheet_music(form, sheet_music):
@@ -46,6 +51,13 @@ def create():
         g.db.add(sheetmusic)
         g.db.commit()
 
+        if request.files.get('cover'):
+            ext = splitext(request.files['cover'].filename)[-1]
+            filename = sheetmusic.title + '_' + str(sheetmusic.id) + '_cover' + ext
+            save_image(request.files['cover'], filename)
+            sheetmusic.cover = filename
+            g.db.commit()
+
         if form.creating_item.data:
             flash("{} has been added to the database. Enter your copy's details below".format(sheetmusic.title),
                   "success")
@@ -75,3 +87,12 @@ def index(sheet_music_id):
                            sheet_music=sheet_music,
                            items=items_available)
 
+
+@sheets_routes.route('/images/<string:filename>')
+def get_image(filename):
+    return send_from_directory(app_settings.UPLOAD_FOLDER, filename)
+
+@sheets_routes.route('/images/thumbnail/<string:filename>')
+def get_thumbnail(filename):
+    thumbnail = get_thumbnail_filename(filename)
+    return send_from_directory(app_settings.UPLOAD_FOLDER, thumbnail)
