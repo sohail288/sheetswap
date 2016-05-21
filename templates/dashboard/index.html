@@ -12,6 +12,7 @@
     <h1>This is your dashboard, {{ current_user.username }}</h1>
 
     <a href="{{ url_for('auth.list_addresses') }}">Edit Mailing Address</a>
+    <a href="{{ url_for('sheets.create', creating_item=1) }}" id="create-item-link">Create an Item</a>
 
     {% if trades %}
     <h2>Trades Pending</h2>
