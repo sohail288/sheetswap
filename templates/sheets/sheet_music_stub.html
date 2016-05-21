@@ -16,7 +16,7 @@
                     {% if sheet_music.cover.startswith('http') %}
                         {{ sheet_music.cover }}
                      {% else %}
-                        {{ url_for('.get_thumbnail', filename=sheet_music.cover) }}
+                        {{ url_for('sheets.get_thumbnail', filename=sheet_music.cover) }}
                     {% endif %}
                  {% endif %}">
         </div>

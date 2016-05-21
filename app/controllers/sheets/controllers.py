@@ -53,7 +53,7 @@ def create():
 
         if request.files.get('cover'):
             ext = splitext(request.files['cover'].filename)[-1]
-            filename = sheetmusic.title + '_' + str(sheetmusic.id) + '_cover' + ext
+            filename = "".join(sheetmusic.title.split(" ")) + '_' + str(sheetmusic.id) + '_cover' + ext
             save_image(request.files['cover'], filename)
             sheetmusic.cover = filename
             g.db.commit()
@@ -91,6 +91,7 @@ def index(sheet_music_id):
 @sheets_routes.route('/images/<string:filename>')
 def get_image(filename):
     return send_from_directory(app_settings.UPLOAD_FOLDER, filename)
+
 
 @sheets_routes.route('/images/thumbnail/<string:filename>')
 def get_thumbnail(filename):
