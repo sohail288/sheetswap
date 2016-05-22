@@ -19,6 +19,16 @@ class UserModelPersistenceTests(DBTest):
         self.assertEqual(u_query, u)
         self.assertEqual(u.id, 1)
 
+    def test_can_the_db_deal_with_casing(self):
+        auth_info = dict(email='JOE@email.com', username='joe', password='123456')
+        u = User(**auth_info)
+        self.db.add(u)
+        self.db.commit()
+
+        u_query = self.db.query(User).filter_by(email=auth_info['email'].lower()).one_or_none()
+
+        self.assertIsNotNone(u_query)
+
     def test_check_backreferences(self):
         u = User(email='joe@email.com', username='joe', password='123456')
         a = Address(street_address='123 abbey ln',
