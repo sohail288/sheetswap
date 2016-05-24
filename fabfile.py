@@ -3,7 +3,7 @@ import itertools
 import time
 from functools import partial
 from fabric.contrib.files import sed, exists
-from fabric.api import run, env, cd, sudo, put, settings
+from fabric.api import run, env, cd, sudo, put, settings, prompt
 
 
 media_directories = [os.path.join("media", media) for media in ['images']]
@@ -191,3 +191,27 @@ def deploy():
     _setup_nginx_server()
     _create_celery_directories()
     _setup_supervisor()
+    sudo('reboot')
+
+
+def restart_services(reboot=False):
+    if reboot:
+        sudo('reboot')
+    else:
+        sudo("supervisorctl stop {}".format(env.host))
+        sudo("supervisorctl stop {}_celery".format(env.host))
+        run('pgrep celery | xargs kill -9')
+        run('pgrep gunicorn | xargs kill -9')
+        sudo("supervisorctl start {}".format(env.host))
+        sudo("supervisorctl start {}_celery".format(env.host))
+        sudo("service nginx restart")
+        sudo("service postgresql restart")
+    
+
+def destroy_all():
+    _configure_globals()
+    sudo("rm -rf {}".format(BASE_DIR))
+    sudo("rm -rf /etc/nginx/sites-available/*")
+    sudo("rm -rf /etc/nginx/sites-enabled/*")
+    sudo("rm -rf /var/log/celery/*")
+    sudo("rm -rf /etc/supervisor/conf.d/*")
