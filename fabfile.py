@@ -209,4 +209,9 @@ def restart_services(reboot=False):
     
 
 def destroy_all():
-    pass 
+    _configure_globals()
+    sudo("rm -rf {}".format(BASE_DIR))
+    sudo("rm -rf /etc/nginx/sites-available/*")
+    sudo("rm -rf /etc/nginx/sites-enabled/*")
+    sudo("rm -rf /var/log/celery/*")
+    sudo("rm -rf /etc/supervisor/conf.d/*")
