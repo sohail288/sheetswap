@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, Unicode, ForeignKey, DateTime, Boolean
+from sqlalchemy import Column, Integer, Unicode, ForeignKey, DateTime, Boolean, event
 from sqlalchemy.orm import validates, relationship
 
 from passlib.apps import custom_app_context as sheetswap_pwd_context
@@ -49,7 +49,7 @@ class User(Base):
 
     def __init__(self, email=None, username=None, password=None, **kwargs):
         if email:
-            self.email = email
+            self.email = email.lower()
         if username:
             self.username = username
         if password:
@@ -84,3 +84,12 @@ class Address(Base):
         return "<Address user={} street_address={} city={}>".format(self.user,
                                                                     self.street_address,
                                                                     self.city)
+
+
+# The following are a series of signals that operate on the mapped classes
+
+
+def lowercase_email(target, value, old_value, initiator):
+    return value.lower()
+
+event.listen(User.email, 'set', lowercase_email, retval=True)

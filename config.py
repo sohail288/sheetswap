@@ -12,6 +12,7 @@ class Config:
     TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
     STATIC_DIR = os.path.join(BASE_DIR, 'static')
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'media/images')
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'tiff'}
 
     # emailing

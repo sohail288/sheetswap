@@ -41,7 +41,8 @@ def login():
     form = LoginForm(request.form)
 
     if request.method == 'POST' and form.validate():
-        user = g.db.query(User).filter_by(email=form.email.data).one_or_none()
+        email = form.email.data
+        user = g.db.query(User).filter_by(email=email.lower()).one_or_none()
         if user and user.verify_password(form.password.data):
             session['logged_in'] = True
             session['current_user_id'] = user.id
