@@ -59,10 +59,14 @@ def dashboard():
         .filter(Trade.user_to_id == g.user.id)\
         .filter(Trade.rejected == True)\
         .all()
+    trades_requested = g.db.query(Trade)\
+        .filter(Trade.user_from_id == g.user.id)\
+        .all()
 
     return render_template('dashboard/index.html',
                            trades=trades_for_user,
                            completed_trades=completed_trades,
+                           trades_requested =trades_requested,
                            rejected_trades=rejected_trades)
 
 

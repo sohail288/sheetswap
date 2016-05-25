@@ -2,18 +2,31 @@
 
 <div class="trade-stub col-xs-12 col-md-6 col-lg-4">
     <div class="panel panel-info">
-        from {{ trade.user_from.username }}
 
-        {% if not trade.completed %}
-        {{  util.form_button(url_for('trades.accept_trade', trade_id=trade.id ),
-                    util.icon('ok', extra_classes=['accept-trade'])) }}
-        {{  util.form_button(url_for('trades.reject_trade', trade_id=trade.id ),
-                    util.icon('remove', extra_classes=['reject-trade']) ) }}
+        {% if trade.user_from_id != current_user.id%}
+            from {{ trade.user_from.username }}
+        {% else %}
+            to {{ trade.user_to.username }}
+        {% endif %}
+
+        {% if trade.user_from_id != current_user.id %}
+            {% if not trade.completed %}
+            {{  util.form_button(url_for('trades.accept_trade', trade_id=trade.id ),
+                        util.icon('ok', extra_classes=['accept-trade'])) }}
+            {{  util.form_button(url_for('trades.reject_trade', trade_id=trade.id ),
+                        util.icon('remove', extra_classes=['reject-trade']) ) }}
+            {% endif %}
         {% endif %}
     </div>
     <div class="panel panel-body">
-        {% if trade.completed %}wanted{% else %}wants{% endif %}
-        {{  trade.item_to.sheetmusic.title }}
+        {% if trade.user_from_id != current_user.id %}
+            {% if trade.completed %}wanted{% else %}wants{% endif %}
+        {% else %}
+            You want
+            <a href="{{ url_for('items.index', item_id=trade.item_to.id) }}">
+                {{  trade.item_to.sheetmusic.title }}
+            </a>
+        {% endif %}
     </div>
 </div>
 
