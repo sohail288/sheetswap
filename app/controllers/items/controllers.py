@@ -4,6 +4,7 @@
 
 from uuid import uuid4
 import os
+import re
 
 from flask import (g,
                    request,
@@ -21,7 +22,13 @@ from app.tasks import save_image
 from models import Item, Sheetmusic, ItemImage
 from models.items.forms import CreateItemForm, EditItemForm
 from models.sheets.forms import SheetMusicForm
-from app.decorators import user_is_logged_in
+from app.decorators import user_is_logged_in, user_passes_test
+
+
+def user_owns_item():
+    user = g.user
+    item_id = request.view_args['item_id']
+    return item_id in [item.id for item in user.items]
 
 
 @items_routes.route('/')
@@ -76,6 +83,7 @@ def index(item_id):
 
 
 @items_routes.route('/<int:item_id>/update', methods=['POST', 'GET'])
+@user_passes_test(user_owns_item)
 @user_is_logged_in
 def update(item_id):
     item = Item.query.filter_by(id=item_id).one_or_none()

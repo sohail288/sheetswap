@@ -14,6 +14,16 @@
     <a href="{{ url_for('auth.list_addresses') }}">Edit Mailing Address</a>
     <a href="{{ url_for('sheets.create', creating_item=1) }}" id="create-item-link">Create an Item</a>
 
+
+    {% if trades_requested %}
+        <h2>Trades Requested By Me</h2>
+        {% with trades=trades_requested %}
+            {% include 'trades/trade_list.html' %}
+        {% endwith %}
+    {% else %}
+        <h2>No trades requested yet, get trading!</h2>
+    {% endif %}
+
     {% if trades %}
     <h2>Trades Pending</h2>
         {% include 'trades/trade_list.html' %}
@@ -47,6 +57,7 @@
     {% else %}
         <h2>Add some items!</h2>
     {% endif %}
+
 
 {% endblock page_content %}
 
