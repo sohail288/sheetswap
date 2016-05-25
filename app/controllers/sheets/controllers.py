@@ -16,11 +16,7 @@ from . import sheets_routes
 from models.sheets import Sheetmusic, Genre, Instrument
 from models.sheets.forms import SheetMusicForm
 from app.decorators import user_is_logged_in
-from app.tasks import save_image, get_thumbnail_filename
-from config import get_env_config
-
-
-app_settings = get_env_config()
+from app.tasks import save_image
 
 
 def populate_sheet_music(form, sheet_music):
@@ -86,14 +82,3 @@ def index(sheet_music_id):
     return render_template('sheets/sheet_music_page.html',
                            sheet_music=sheet_music,
                            items=items_available)
-
-
-@sheets_routes.route('/images/<string:filename>')
-def get_image(filename):
-    return send_from_directory(app_settings.UPLOAD_FOLDER, filename)
-
-
-@sheets_routes.route('/images/thumbnail/<string:filename>')
-def get_thumbnail(filename):
-    thumbnail = get_thumbnail_filename(filename)
-    return send_from_directory(app_settings.UPLOAD_FOLDER, thumbnail)
