@@ -17,14 +17,11 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 
 from . import items_routes
-from app.tasks import save_image, get_thumbnail_filename
+from app.tasks import save_image
 from models import Item, Sheetmusic, ItemImage
 from models.items.forms import CreateItemForm, EditItemForm
 from models.sheets.forms import SheetMusicForm
 from app.decorators import user_is_logged_in
-from config import get_env_config
-
-app_settings = get_env_config()
 
 
 @items_routes.route('/')
@@ -115,14 +112,3 @@ def remove(item_id):
     flash('Cannot do that', 'error')
     return redirect(url_for('main.dashboard'))
 
-
-@items_routes.route('/images/<string:filename>')
-def get_image(filename):
-    return send_from_directory(app_settings.UPLOAD_FOLDER, filename)
-
-
-@items_routes.route('/images/thumbnail/<string:filename>')
-def get_thumbnail(filename):
-    thumbnail_filename = get_thumbnail_filename(filename)
-
-    return send_from_directory(app_settings.UPLOAD_FOLDER, thumbnail_filename)
