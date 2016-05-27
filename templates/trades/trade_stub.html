@@ -1,12 +1,20 @@
 {% import 'util.html' as util %}
 
 <div class="trade-stub col-xs-12 col-md-6 col-lg-4">
-    <div class="panel panel-info">
+    <div class="panel panel-info panel-heading ">
 
         {% if trade.user_from_id != current_user.id%}
-            from {{ trade.user_from.username }}
+            {% set header= "from " ~ trade.user_from.username %}
         {% else %}
-            to {{ trade.user_to.username }}
+            {% set header= "to " ~ trade.user_to.username %}
+        {% endif %}
+
+        {% if trade.completed and not trade.rejected %}
+            <a href="{{ url_for('trades.main', trade_id=trade.id) }}">
+                {{ header }}
+            </a>
+        {% else %}
+            {{ header }}
         {% endif %}
 
         {% if trade.user_from_id != current_user.id %}
@@ -22,11 +30,11 @@
         {% if trade.user_from_id != current_user.id %}
             {% if trade.completed %}wanted{% else %}wants{% endif %}
         {% else %}
-            You want
+            You {% if trade.completed %}wanted{%  else %}want{% endif %}
+        {% endif %}
             <a href="{{ url_for('items.index', item_id=trade.item_to.id) }}">
                 {{  trade.item_to.sheetmusic.title }}
             </a>
-        {% endif %}
     </div>
 </div>
 

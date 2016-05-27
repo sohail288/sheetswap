@@ -4,21 +4,36 @@
 
 
     {% if trade.completed and not trade.rejected %}
-        <h1>Trade Completed! Here are the addresses you two should use for the swap!</h1>
-        {% set address = user_from.addresses[0] %}
-        <h3>{{ user_from.username }}</h3>
-        <div class="lead address">
-            <p>{{ address.street_address }}</p>
-            <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
-            <p>{{ address.country }}</p>
-        </div>
 
-        {% set address = user_to.addresses[0] %}
-        <h3>{{ user_to.username }}</h3>
-        <div class="lead address">
-            <p>{{ address.street_address }}</p>
-            <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
-            <p>{{ address.country }}</p>
+        <h1 class="text-center">Trade Completed!</h1>
+        <p class="lead text-center">{{ user_from.username }} will send {{ trade.item_from.sheetmusic.title }}</p>
+        <p class="lead text-center">{{ user_to.username }} will send {{ trade.item_to.sheetmusic.title }}</p>
+        <h2 class="text-center">Here are the addresses you two should use for the swap!</h2>
+
+        <div class="row text-center">
+            <div class="col-md-4">
+                {% set address = user_from.addresses[0] %}
+                <h3>{{ user_from.username }}</h3>
+                <div class="lead address">
+                    <p>{{ address.street_address }}</p>
+                    <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+                    <p>{{ address.country }}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+               <span style="font-size:100px;padding-top: 50px;padding-bottom:50px"
+                     class="glyphicon glyphicon-retweet"
+                     aria-hidden="true"></span>
+            </div>
+            <div class=" style=col-md-4">
+                {% set address = user_to.addresses[0] %}
+                <h3>{{ user_to.username }}</h3>
+                <div class="lead address">
+                    <p>{{ address.street_address }}</p>
+                    <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+                    <p>{{ address.country }}</p>
+                </div>
+            </div>
         </div>
     {% else %}
         <h1> This is your trade between {{ trade.item_from.sheetmusic.title }} and
