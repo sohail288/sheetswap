@@ -141,5 +141,3 @@ class TradeTests(SeleniumTest):
         error = self.client.find_element_by_css_selector('.alert-danger')
 
         self.assertIn('you are not a part of that trade', error.text.lower())
-
-
