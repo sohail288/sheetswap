@@ -103,3 +103,18 @@ class AnonymousTests(SeleniumTest):
         self.assertIn('Thanks for registering', alert.text)
 
 
+    def test_new_users_are_alerted_if_they_try_to_create_an_already_existing_account(self):
+        username = 'testuser'
+        email = username + '@email.com'
+        password = '1234'
+
+        self.register(email, username, password)
+
+        # they try it again
+        self.go_to('auth/logout')
+
+        self.register(email, username, password)
+
+        alert = self.client.find_element_by_css_selector('.alert')
+
+        self.assertIn('That email or username already exists!', alert.text)

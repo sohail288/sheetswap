@@ -67,6 +67,14 @@ class User(Base):
         return [item for item in self.items
                 if not any([trade.completed and not trade.rejected for trade in item.trades])]
 
+    @staticmethod
+    def get_user_by_email_or_none(email):
+        return User.query.filter(User.email.ilike(email)).one_or_none()
+
+    @staticmethod
+    def get_user_by_username_or_none(username):
+        return User.query.filter(User.username.ilike(username)).one_or_none()
+
 
 class Address(Base):
     __tablename__ = 'addresses'
