@@ -10,8 +10,18 @@
     <div class="jumbotron text-center">
         <h1>Trade your sheet music!</h1>
         <form action="{{ url_for('.search_results') }}" method="GET">
-            <input id='q_box' name="q" class='form-control input-lg' type="text" placeholder="Vivaldi 4 Seasons">
+            <input id='q_box' name="q" class='form-control input-lg' type="text" placeholder="Search for sheet music...">
         </form>
+    </div>
+    <div id="suggested-sheets" class="panel panel-default">
+        <div class="panel-heading">
+            <h3>Here are some of the available sheets</h3>
+        </div>
+        <ul class="list-unstyled panel-body">
+            {% for sheet_music in suggested_sheetmusic %}
+               {%  include 'sheets/sheet_music_stub.html' %}
+            {% endfor %}
+        </ul>
     </div>
 
 {% endblock page_content %}

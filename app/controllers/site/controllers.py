@@ -2,7 +2,7 @@
     This contains the controllers for the main site
 """
 
-from sqlalchemy import and_
+from sqlalchemy import and_, desc
 
 from flask import (Blueprint,
                    g,
@@ -29,7 +29,9 @@ app_settings = get_env_config()
 
 @main_routes.route('/')
 def index():
-    return render_template('main.html')
+    suggested_sheetmusic = [i.sheetmusic for i in Item.query.all() if i.available]
+    suggested_sheetmusic = sorted(suggested_sheetmusic, key=lambda i: -1*i.id)[:4]
+    return render_template('main.html', suggested_sheetmusic=suggested_sheetmusic)
 
 
 @main_routes.route('/results')
