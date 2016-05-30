@@ -41,7 +41,7 @@ def login():
     form = LoginForm(request.form)
 
     if request.method == 'POST' and form.validate():
-        email = form.email.data
+        email = form.email.data.strip()
         user = g.db.query(User).filter_by(email=email.lower()).one_or_none()
         if user and user.verify_password(form.password.data):
             session['logged_in'] = True
@@ -59,15 +59,22 @@ def register():
     form = RegistrationForm(request.form)
 
     if request.method == 'POST' and form.validate():
-        user = User()
-        form.populate_obj(user)
-        g.db.add(user)
-        g.db.commit()
+        if not (User.get_user_by_email_or_none(form.email.data) or
+                    User.get_user_by_username_or_none(form.username.data)):
+            user = User()
+            form.populate_obj(user)
 
-        session['current_user_id'] = user.id
-        session['logged_in'] = True
-        flash("Thanks for registering", 'success')
-        return redirect(url_for('main.index'))
+            # store the email in lowercase form
+            user.email = form.email.data.strip().lower()
+            g.db.add(user)
+            g.db.commit()
+
+            session['current_user_id'] = user.id
+            session['logged_in'] = True
+            flash("Thanks for registering", 'success')
+            return redirect(url_for('main.index'))
+
+        flash('That email or username already exists!', 'error')
 
     return render_template('auth/registration.html', form=form)
 
