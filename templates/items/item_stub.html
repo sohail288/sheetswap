@@ -18,7 +18,8 @@
         {% endif %}
     {% endif %}
         <div class="panel-heading">
-                {{ item.sheetmusic.title }} {% if current_user %}{{ form_button }} {% endif %}
+                <a href="{{ url_for('items.index', item_id=item.id) }}">{{ item.sheetmusic.title }}</a>
+                {% if current_user %}{{ form_button }} {% endif %}
         </div>
         <div class="Panel-body">
             {{ item.condition }}
