@@ -29,7 +29,7 @@ app_settings = get_env_config()
 
 @main_routes.route('/')
 def index():
-    suggested_sheetmusic = [i.sheetmusic for i in Item.query.all() if i.available]
+    suggested_sheetmusic = set([i.sheetmusic for i in Item.query.all() if i.available])
     suggested_sheetmusic = sorted(suggested_sheetmusic, key=lambda i: -1*i.id)[:4]
     return render_template('main.html', suggested_sheetmusic=suggested_sheetmusic)
 
