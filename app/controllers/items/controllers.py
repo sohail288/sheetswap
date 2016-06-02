@@ -25,10 +25,33 @@ from models.sheets.forms import SheetMusicForm
 from app.decorators import user_is_logged_in, user_passes_test
 
 
+def item_is_in_a_completed_trade(item):
+    return any(t.completed for t in item.trades)
+
+
 def user_owns_item():
     user = g.user
     item_id = request.view_args['item_id']
     return item_id in [item.id for item in user.items]
+
+
+def item_is_visible():
+    """ If item has been traded already or is unavailable then you cannot view it unless you own it"""
+    user = g.user
+    item_id = request.view_args['item_id']
+    item = Item.query.filter_by(id=item_id).one()
+
+    is_in_a_completed_trade = [t for t in item.trades if t.completed]
+
+    if is_in_a_completed_trade or not item.available:
+        user_is_trade_user = False
+        if is_in_a_completed_trade:
+            item_trade = is_in_a_completed_trade[0]
+            trade_user = item_trade.user_from if user != item_trade.user_to else item_trade.user_to
+            user_is_trade_user = user == trade_user
+        return user == item.user or user_is_trade_user
+    else:
+        return True
 
 
 @items_routes.route('/')
@@ -71,6 +94,7 @@ def create():
 
 
 @items_routes.route('/<int:item_id>')
+@user_passes_test(item_is_visible)
 def index(item_id):
     item = Item.query.filter_by(id=item_id).one_or_none()
     if item is None:
@@ -89,6 +113,11 @@ def update(item_id):
     item = Item.query.filter_by(id=item_id).one_or_none()
     form = EditItemForm(request.form, item)
     if request.method == 'POST' and form.validate():
+        # user should not be allowed to change an item if its in a trade already
+        if item_is_in_a_completed_trade(item):
+            flash("You cannot change an item that has already been traded", "error")
+            return redirect(url_for('.index', item_id=item_id))
+
         form.populate_obj(item)
         g.db.commit()
 
@@ -119,4 +148,3 @@ def remove(item_id):
         return redirect(url_for('main.dashboard'))
     flash('Cannot do that', 'error')
     return redirect(url_for('main.dashboard'))
-
