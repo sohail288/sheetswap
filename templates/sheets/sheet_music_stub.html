@@ -9,16 +9,16 @@
 
         <div class="panel-body">
 
-        <img class="img-rounded center-block" src= {% if not sheet_music.cover %}
-                     "{{ url_for('static',
-                filename='assets/images/sheet_image_stub.jpg') }}
-                 {% else %}
-                    {% if sheet_music.cover.startswith('http') %}
-                        {{ sheet_music.cover }}
+            <img class="img-rounded center-block" src= {% if not sheet_music.cover %}
+                         "{{ url_for('static',
+                    filename='assets/images/sheet_image_stub.jpg') }}
                      {% else %}
-                        {{ url_for('main.get_thumbnail', filename=sheet_music.cover) }}
-                    {% endif %}
-                 {% endif %}">
+                        {% if sheet_music.cover.startswith('http') %}
+                            {{ sheet_music.cover }}
+                         {% else %}
+                            {{ url_for('main.get_thumbnail', filename=sheet_music.cover) }}
+                        {% endif %}
+                     {% endif %}">
         </div>
 
         {% set num_items = sheet_music.items |  selectattr('available')| list | count %}

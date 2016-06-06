@@ -1,28 +1,50 @@
 {% extends 'base.html' %}
 
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/items/styles.css') }}">
+{% endblock styles %}
+
 {% set sheetmusic=item.sheetmusic %}
 
 {% block page_content %}
     <h1> {{ sheetmusic.title }}</h1>
 
     {% if g.user and item.user == g.user %}
-    <a id="edit-item" href="{{ url_for('.update', item_id=item.id) }}">Edit item</a>
+        <a id="edit-item"  href="{{ url_for('.update', item_id=item.id) }}">Edit item</a>
     {% endif %}
 
     {% if not item.available and item.user == current_user %}
         <p class="item-not-available">this item is hidden from other users</p>
     {% endif %}
 
-    <p id="title">{{ sheetmusic.title }}</p>
-    <p id="composer">{{ sheetmusic.composer }}</p>
-    <p id="condition">{{ item.condition_text }}</p>
-    <p id="description">{{ item.description }} </p>
+
+    <div class="row">
+        <table class="table-responsive">
+            <tr>
+                <th>Title</th>
+                <td id="title">{{ sheetmusic.title }}</td>
+            </tr>
+            <tr>
+                <th>Composer</th>
+                <td id="composer">{{ sheetmusic.composer }}</td>
+            </tr>
+            <tr>
+                <th>Condition</th>
+                <td id="condition">{{ item.condition_text }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td id="description">{{ item.description }} </td>
+            </tr>
+        </table>
+    </div>
 
     <div class="row images">
         {% for image in item.images %}
             <div class="col-sm-12 col-md-4">
                 <a href="{{ url_for('main.get_image', filename=image) }}">
-                    <img class="thumbnail" src="{{ url_for('main.get_thumbnail', filename=image) }}">
+                    <img class="thumbnail img-responsive" src="{{ url_for('main.get_thumbnail', filename=image) }}">
                 </a>
             </div>
         {% endfor %}

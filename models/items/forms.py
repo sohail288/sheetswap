@@ -22,13 +22,13 @@ condition_choices = [
 
 class CreateItemForm(Form):
     sheetmusic_id = HiddenInteger("sheetmusic_id")
-    description = TextAreaField()
+    description = TextAreaField(validators=[validators.Length(max=255)])
     condition = SelectField('Condition', choices=condition_choices)
     images = FileField('Sheetmusic Images', render_kw={'multiple': True})
 
 
 class EditItemForm(Form):
-    description = TextAreaField()
+    description = TextAreaField(validators=[validators.Length(max=256)])
     images = FileField('Sheetmusic Images', render_kw={'multiple': True})
     condition = SelectField('Condition', choices=condition_choices)
     available = BooleanField('Available?')
