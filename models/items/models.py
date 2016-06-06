@@ -20,6 +20,7 @@ condition_map = dict([
     ('okay', 'Not too bad'),
     ('marked', 'Has markings'),
     ('missing', 'Is missing pages'),
+    ('incomplete', 'may be missing pages'),
     ('torn', 'Torn pages, but all there'),
     ('old', 'Oldish')
 ])

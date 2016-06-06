@@ -26,7 +26,7 @@ from app.decorators import user_is_logged_in, user_passes_test
 
 
 def item_is_in_a_completed_trade(item):
-    return any(t.completed for t in item.trades)
+    return any(t.completed and not t.rejected for t in item.trades)
 
 
 def user_owns_item():
