@@ -3,13 +3,13 @@
     <div class="panel panel-default">
         <div class="panel-heading text-center">
             <a href="{{ url_for('sheets.index', sheet_music_id = sheet_music.id) }}">
-                {{ sheet_music.title }}
+                <div class="wrap-panel-header text-nowrap">{{ sheet_music.title }}</div>
             </a>
         </div>
 
         <div class="panel-body">
 
-            <img class="img-rounded center-block" src= {% if not sheet_music.cover %}
+            <img class="img-rounded center-block img-responsive" src= {% if not sheet_music.cover %}
                          "{{ url_for('static',
                     filename='assets/images/sheet_image_stub.jpg') }}
                      {% else %}

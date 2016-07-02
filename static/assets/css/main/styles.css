@@ -10,3 +10,17 @@
     padding-bottom: 20px;
 }
 
+.wrap-panel-header {
+    text-overflow: ellipsis;
+    width: 250px;
+    overflow: hidden;
+}
+
+/* prevent overflow clip when the panels have more room */
+@media (min-width: 992px) {
+
+    .wrap-panel-header{
+        width: 100%;
+    }
+}
+
