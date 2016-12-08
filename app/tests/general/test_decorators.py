@@ -16,7 +16,6 @@ class DecoratorTests(unittest.TestCase):
     User = namedtuple('User', 'id trade_ids')
     Trade = namedtuple('Trade', 'id user_from_id user_to_id')
 
-
     def test_user_is_part_of_trade__correctly_wraps_function(self, g, flash, redirect, url_for):
 
         @user_is_part_of_trade()
@@ -26,7 +25,7 @@ class DecoratorTests(unittest.TestCase):
         self.assertEqual(a_controller.__name__, 'a_controller')
 
     def test_user_is_part_of_trade__prevents_unauthorized_access(self, g, flash, redirect, url_for):
-        user = self.User(3, [2,3,4])
+        user = self.User(3, [2, 3, 4])
         g.configure_mock(user=user)
 
         @user_is_part_of_trade(on_error=404)
@@ -106,7 +105,26 @@ class DecoratorTests(unittest.TestCase):
         self.assertFalse(abort.called)
         self.assertEqual(rv, 'secret info')
 
+    @mock.patch('app.decorators.request')
+    @mock.patch('app.decorators.abort')
+    def test_user_fails_test_and_gets_redirected(self, abort, request, g, flash, redirect, url_for):
+        User = namedtuple('User', 'id trade_ids addresses')
+        g.configure_mock(user=self.User(1, [], []))
 
+        test_fnc = lambda : False
+
+        def a_controller():
+            return 'will not happen'
+
+        redirected_controller = user_passes_test(test_fnc, 'testing_view')(a_controller)
+        rv = redirected_controller()
+        self.assertTrue(redirect.called)
+
+        redirect.reset_mock()
+        flashed_message_controller = user_passes_test(test_fnc, 'testing_view', 'a message')(a_controller)
+        rv = flashed_message_controller()
+        self.assertTrue(flash.called)
+        self.assertTrue(redirect.called)
 
 
 class DecoratorContextTests(AppTest):
@@ -120,9 +138,9 @@ class DecoratorContextTests(AppTest):
 
     def test_user_is_part_of_trade__redirects_to_dashboard(self):
         response = self.client.post(url_for('auth.login'),
-                         data=dict(email='mary@email.com', password='password'),
-                         follow_redirects=True,
-                         )
+                                    data=dict(email='mary@email.com', password='password'),
+                                    follow_redirects=True,
+                                    )
 
         self.assertIn('Welcome', response.get_data(as_text=True))
 
@@ -134,11 +152,7 @@ class DecoratorContextTests(AppTest):
         response = self.client.post(url_for('auth.login'),
                                     data=dict(email='mary@email.com', password='password'),
                                     follow_redirects=True,
-        )
+                                    )
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('Welcome', response.get_data(as_text=True))
-
-
-
-
