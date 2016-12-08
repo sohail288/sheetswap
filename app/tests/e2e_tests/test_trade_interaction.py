@@ -141,3 +141,30 @@ class TradeTests(SeleniumTest):
         error = self.client.find_element_by_css_selector('.alert-danger')
 
         self.assertIn('you are not a part of that trade', error.text.lower())
+
+    def test_user_cannot_trade_without_having_an_address(self):
+        # in this setting, a user, mu tries to trade with omega
+        # however mu does not have an address
+        # should throw an error
+        self.omega_creates_an_item()
+
+        # mu freshly registers
+        self.register('mu@email.com', 'mu', 'password')
+
+        # goes to the sheets page
+        self.go_to('sheets')
+
+        # finds omegas sheet music
+        link = self.client.find_element_by_link_text('symphony #5')
+        link.click()
+
+        # sees that they can trade
+        item = self.client.find_element_by_css_selector('.item-stub')
+        trade_link= item.find_element_by_css_selector('.btn-link')
+        trade_link.click()
+
+        # they are taken to the addresses page
+        # where they see an error that says "you must add an address before you start trading!
+        self.assertIn('dashboard', self.client.current_url)
+        self.assertIn('add an address before you start trading',
+                      self.client.find_element_by_css_selector('flashed-messages').text)

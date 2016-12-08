@@ -71,9 +71,15 @@ class SeleniumTest(unittest.TestCase):
     def setUpClass(cls):
         # start the driver
         try:
+            import subprocess
+            driver_directories = ['/usr/local/bin']
+            os.environ.update({'PATH': ':'.join(driver_directories + [os.environ.get('PATH')])})
             cls.client = webdriver.Firefox()
-        except:
-            pass
+
+        except Exception as exc:
+            print("your path is:\n {}".format(sys.path))
+            print("sys path is:\n {}".format(os.environ.get('PATH')))
+            print("could not load selenium webdriver", str(exc), sep='\n')
 
         if cls.client:
             os.environ['APP_SETTINGS'] == 'testing' or os.environ.update(APP_SETTINGS='testing')
@@ -173,15 +179,15 @@ class SeleniumTest(unittest.TestCase):
         client.find_element_by_xpath('//button[@type="submit"]').click()
 
 
-    def register(self, e, n, p):
+    def register(self, new_email, new_username, new_password):
         self.go_to('auth/register')
         email = self.client.find_element_by_id('email')
         username = self.client.find_element_by_id('username')
         password = self.client.find_element_by_id('password')
         check_password = self.client.find_element_by_id('check_password')
-        email.send_keys(e)
-        username.send_keys(n)
-        password.send_keys(p)
-        check_password.send_keys(p)
+        email.send_keys(new_email)
+        username.send_keys(new_username)
+        password.send_keys(new_password)
+        check_password.send_keys(new_password)
         submit = self.client.find_element_by_xpath('//button[@type="submit"]')
         submit.click()

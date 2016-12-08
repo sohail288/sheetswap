@@ -53,6 +53,9 @@ def user_doesnt_already_have_an_active_trade_with_item():
 
 @trade_routes.route('/request/<int:requested_item_id>', methods=['POST'])
 @user_passes_test(test_func=user_doesnt_already_have_an_active_trade_with_item)
+@user_passes_test(test_func=lambda: len(g.user.addresses) > 0,
+                  flashed_message="add an address before trading",
+                  view_path_to_redirect_to='auth.add_address')
 def request_trade(requested_item_id):
     requested_item = Item.query.filter_by(id=requested_item_id).one()
     to_user_id = requested_item.user.id

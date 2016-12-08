@@ -33,14 +33,14 @@ def user_is_logged_in(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if g.user is None:
-            flash('Must be logged in to access that')
+            flash('Must be logged in to access that', category='warning')
             return redirect(url_for('auth.login', next=request.path))
         return func(*args, **kwargs)
 
     return wrapper
 
 
-def user_passes_test(test_func=lambda: False):
+def user_passes_test(test_func=lambda: False, view_path_to_redirect_to="", flashed_message="", **opts):
     def decorator(func):
         @user_is_logged_in
         @wraps(func)
@@ -48,6 +48,10 @@ def user_passes_test(test_func=lambda: False):
             if test_func():
                 return func(*args, **kwargs)
             else:
+                if view_path_to_redirect_to:
+                    if flashed_message:
+                        flash(flashed_message, category='error')
+                    return redirect(url_for(view_path_to_redirect_to, next=request.path, **opts))
                 abort(403)
         return wrapper
     return decorator
