@@ -22,8 +22,8 @@ def pluralize(word, quantity, plural_form='s'):
 word_numbers = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven']
 
 
-def time_ago(date, today=datetime.datetime.now()):
-
+def time_ago(date, today=None):
+    today = datetime.datetime.now() if today is None else today
     if not isinstance(today, datetime.datetime):
         today = parse(today)
     if not isinstance(date, datetime.datetime):
